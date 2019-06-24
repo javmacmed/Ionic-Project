@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>unePalabras</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-row>
+    
+    <ion-col>
+      <ion-list-header>
+        <ion-label>Español</ion-label>
+      </ion-list-header>
+      <ion-list>
+        <ion-item [ngClass]="{si: estadoPositivo, no: !estadoPositivo, eligiendo: }" *ngFor="let animal of animals" (click)="selectWords(animal.id,0)" [id]="animal.id">
+          <ion-label>
+            <p>{{ animal.spanishName }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+
+    <ion-col>
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Inglés</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let animal of animals" (click)="tapShow(animal.id,1)" [id]="animal.id">
+          <ion-label>
+            <p>{{ animal.englishName }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+
+  </ion-row>
+</ion-content>

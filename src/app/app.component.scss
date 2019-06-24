@@ -1,0 +1,12 @@
+:host {
+    ion-content {
+        //--background: linear-gradient(135deg, var(--ion-color-dark), var(--ion-color-primary));
+        --background: linear-gradient(90deg, var(--ion-color-dark), var(--ion-color-secondary)); //SEJMM Cambio fondo pantalla principal
+    }
+
+    ion-list {
+        &.list-md {
+            padding: 0;
+        }
+    }
+}
