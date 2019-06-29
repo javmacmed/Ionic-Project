@@ -12,7 +12,7 @@
         <ion-label>Español</ion-label>
       </ion-list-header>
       <ion-list>
-        <ion-item [ngClass]="{si: estadoPositivo, no: !estadoPositivo, eligiendo: }" *ngFor="let animal of animals" (click)="selectWords(animal.id,0)" [id]="animal.id">
+        <ion-item [ngClass]="{si: setElementColour(animal.id, 0) == 1, no: (animal.id, 0) == 0, eligiendo: (animal.id, 0) == 2 , default: (animal.id, 0) == 3}" *ngFor="let animal of animals" (click)="selectWords(animal.id,0)" [id]="animal.id">
           <ion-label>
             <p>{{ animal.spanishName }}</p>
           </ion-label>
@@ -25,7 +25,7 @@
         <ion-list-header>
           <ion-label>Inglés</ion-label>
         </ion-list-header>
-        <ion-item *ngFor="let animal of animals" (click)="tapShow(animal.id,1)" [id]="animal.id">
+        <ion-item [ngClass]="{si: setElementColour(animal.id, 1) == 1, no: (animal.id, 1) == 0, eligiendo: (animal.id, 1) == 2 , default: (animal.id, 1) == 3}" *ngFor="let animal of animals" (click)="tapShow(animal.id,1)" [id]="animal.id">
           <ion-label>
             <p>{{ animal.englishName }}</p>
           </ion-label>

@@ -17,7 +17,7 @@ export class UnePalabrasPage implements OnInit {
   lastElemColumnSelected = 2; // Última columna seleccionada; 0: izquierda, 1: derecha, 2: No determinada
   idOfWordSelected: number;
   animals: Elem[] = [];
-  idResultsMap = new Map<number, number[]>(); // Mapa para almacenar las relaciones id-resultado del juego
+  idResultsMap = new Map<number, Map<number, number>>(); // Mapa para almacenar las relaciones id-resultado del juego en función de las columnas
   animal = {}; // NOTA: Esto sería para añadir en el ts de la pagina formulario para añadir elementos a la lista que sea
 
   constructor(private db: DatabaseService) { }
@@ -30,31 +30,34 @@ export class UnePalabrasPage implements OnInit {
         });
       }
     });
-    /* Inicializamos el mapa id-resultados para cada entrada en la tabla de animales con la que se va a jugar. De este
-      modo definiremos como valor por defecto para el resultado 2 (Aun no elegido).
+    /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
+      modo definiremos como valor por defecto 3 (Color por defecto, no elegido).
     */
     for (const id of this.animals) {
-      this.idResultsMap.set(id.id, [2, 2]);
+      const auxMap = new Map<number, number>();
+      auxMap.set(0, 3); // Columna izquierda; Color default
+      auxMap.set(1, 3); // Columna derecha; Color default
+      this.idResultsMap.set(id.id, auxMap);
     }
   }
 
   // NOTA: Estas dos siguientes funciones serían para añadir u obtener en el ts de la pagina formulario
   // para añadir elementos a la lista que sea.
-/**
- * @description: Obtiene un animal desde la tabla dado un ID.
- * @param id: Id del elemento seleccionado por el usuario
- */
+  /**
+   * @description: Obtiene un animal desde la tabla dado un ID.
+   * @param id: Id del elemento seleccionado por el usuario
+   */
   getAnimal(id: number): Promise<Elem> {
     return this.db.getAnimal(id);
   }
-/**
- * @description: Añade un animal a la tabla
- */
+  /**
+   * @description: Añade un animal a la tabla
+   */
   addAnimal() {
     this.db.addAnimal(this.animal['spanishName'], this.animal['englishName'])
-    .then(_ => {
-      this.animal = {};
-    });
+      .then(_ => {
+        this.animal = {};
+      });
   }
 
   /**
@@ -66,21 +69,50 @@ export class UnePalabrasPage implements OnInit {
    * TODO: Establecer colores de los elementos con el ID entrante en la funcion en caso de no suceder un error
    */
   selectWords(id: number, column: number) {
+    const auxMap = new Map<number, number>(); // Declaramos mapa auxiliar
     if (this.numWordsSelected === 0) {
+      auxMap.set(column, 2); // Primer botón de la combinación pulsado; Color amarillo
       this.numWordsSelected++;
       this.idOfWordSelected = id;
+      this.idResultsMap.set(id, auxMap); // Asignamos al mapa global de combinaciones.
     } else if (this.numWordsSelected === 1 && this.lastElemColumnSelected !== column) {
       this.numWordsSelected = 0; // Reiniciamos el contador
       this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
       // Añadimos/modificamos par clave-valor
       if (this.idOfWordSelected === id) {
-        this.idResultsMap.set(id, [1, column]); // Correcto
+        auxMap.set(column, 1); // Segundo botón de la combinación pulsado; Valor correcto; Color verde
+        this.idResultsMap.set(id, auxMap); // Correcto
       } else {
-        this.idResultsMap.set(id, [0, column]); // Incorrecto
+        auxMap.set(column, 0); // Segundo botón de la combinación pulsado; Valor correcto; Color verde
+        this.idResultsMap.set(id, auxMap); // Incorrecto
       }
     } else {
       this.numWordsSelected = 0; // Reiniciamos el contador
       this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
+    }
+  }
+
+  /**
+   * @description: Modifica el color de los elementos de cada lista, en función del estado de dicho elemento.
+   * @param id: Id del elemento seleccionado por el usuario
+   * @param column: Usado para evitar que confundamos el pulsar el mismo elemento dos veces en lugar del par correctamente
+   * TODO: Establecer colores de los elementos con el ID entrante en la funcion en caso de no suceder un error
+   */
+  setElementColour(id: number, column: number): number {
+    let auxMap = new Map<number, number>(); // Declaramos mapa auxiliar
+    auxMap = this.idResultsMap.get(id);
+    switch (auxMap.get(column)) {
+      case 3:
+        return 3;
+      case 2:
+        return 2;
+      case 1:
+        return 1;
+      case 0:
+        return 0;
+      default:
+        confirm('Valor erroneo');
+        break;
     }
   }
 }
