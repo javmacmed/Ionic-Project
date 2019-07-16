@@ -40,6 +40,9 @@ export class DatabaseService {
         .then((db: SQLiteObject) => {
           this.database = db;
           this.seedDatabase();
+        })
+        .catch((e) => {
+          console.log(e);
         });
     });
   }

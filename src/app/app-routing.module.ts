@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   // SEJMM DS001 Esta primera linea redirige a la pagina inicial de la app
-  { path: '', redirectTo: 'une-palabras', pathMatch: 'full' },
+  { path: '', redirectTo: 'home-results', pathMatch: 'full' },
   { path: 'login', loadChildren: './pages/login/login.module#LoginPageModule' },
   { path: 'register', loadChildren: './pages/register/register.module#RegisterPageModule' },
   { path: 'home-results', loadChildren: './pages/home-results/home-results.module#HomeResultsPageModule' },

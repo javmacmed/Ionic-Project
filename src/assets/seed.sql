@@ -1,12 +1,12 @@
-CREATE TABLE IF NOT EXISTS animals(id INTEGER PRIMARY KEY AUTOINCREMENT,spanishName TEXT,englishName TEXT);
-INSERT or IGNORE INTO animals VALUES (1, 'León', 'Lion');
-INSERT or IGNORE INTO animals VALUES (2, 'Tigre', 'Tiger');
-INSERT or IGNORE INTO animals VALUES (3, 'Perro', 'Dog');
-INSERT or IGNORE INTO animals VALUES (4, 'Gato', 'Cat');
-INSERT or IGNORE INTO animals VALUES (5, 'Loro', 'Parrot');
-INSERT or IGNORE INTO animals VALUES (6, 'Pájaro', 'Bird');
-INSERT or IGNORE INTO animals VALUES (7, 'Delfín', 'Dolphin');
+CREATE TABLE IF NOT EXISTS animals (id INTEGER PRIMARY KEY AUTOINCREMENT, spanishName TEXT NOT NULL, englishName TEXT NOT NULL);
+INSERT or IGNORE INTO animals(spanishName, englishName) VALUES ('León', 'Lion');
+INSERT or IGNORE INTO animals(spanishName, englishName) VALUES ('Tigre', 'Tiger');
+INSERT or IGNORE INTO animals(spanishName, englishName) VALUES ('Perro', 'Dog');
+INSERT or IGNORE INTO animals(spanishName, englishName) VALUES ('Gato', 'Cat');
+INSERT or IGNORE INTO animals(spanishName, englishName) VALUES ('Loro', 'Parrot');
+INSERT or IGNORE INTO animals(spanishName, englishName) VALUES ('Pájaro', 'Bird');
+INSERT or IGNORE INTO animals(spanishName, englishName) VALUES ('Delfín', 'Dolphin');
 
-CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,userName TEXT,password PASSWORD);
-INSERT or IGNORE INTO animals VALUES (1, 'Anisuri', '20J2018');
-INSERT or IGNORE INTO animals VALUES (2, 'JmacArrow', 'MEQTE');
+CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, userName TEXT NOT NULL, pass PASSWORD NOT NULL);
+INSERT or IGNORE INTO users(userName, pass) VALUES ('Anisuri', '20J2018');
+INSERT or IGNORE INTO users(userName, pass) VALUES ('JmacArrow', 'MEQTE');

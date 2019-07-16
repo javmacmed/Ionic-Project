@@ -106,4 +106,8 @@ export class HomeResultsPage {
     return await popover.present();
   }
 
+  goToUnePalabras() {
+    this.navCtrl.navigateRoot('/une-palabras');
+  }
+
 }
