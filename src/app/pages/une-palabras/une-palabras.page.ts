@@ -27,18 +27,18 @@ export class UnePalabrasPage implements OnInit {
       if (rdy) {
         this.db.getAnimals().subscribe(anim => {
           this.animals = anim;
+          /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
+            modo definiremos como valor por defecto 3 (Color por defecto, no elegido).
+          */
+          for (const id of this.animals) {
+            const auxMap = new Map<number, number>();
+            auxMap.set(0, 3); // Columna izquierda; Color default
+            auxMap.set(1, 3); // Columna derecha; Color default
+            this.idResultsMap.set(id.id, auxMap);
+          }
         });
       }
     });
-    /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
-      modo definiremos como valor por defecto 3 (Color por defecto, no elegido).
-    */
-    for (const id of this.animals) {
-      const auxMap = new Map<number, number>();
-      auxMap.set(0, 3); // Columna izquierda; Color default
-      auxMap.set(1, 3); // Columna derecha; Color default
-      this.idResultsMap.set(id.id, auxMap);
-    }
   }
 
   // NOTA: Estas dos siguientes funciones serían para añadir u obtener en el ts de la pagina formulario
@@ -69,23 +69,47 @@ export class UnePalabrasPage implements OnInit {
    * TODO: Establecer colores de los elementos con el ID entrante en la funcion en caso de no suceder un error
    */
   selectWords(id: number, column: number) {
-    const auxMap = new Map<number, number>(); // Declaramos mapa auxiliar
+    const auxMap = this.idResultsMap.get(id); // Declaramos mapa auxiliar y obtenemos el mapa asociado al id pasado como parametro
+    const firstAuxMap = this.idResultsMap.get(this.idOfWordSelected);
     if (this.numWordsSelected === 0) {
       auxMap.set(column, 2); // Primer botón de la combinación pulsado; Color amarillo
       this.numWordsSelected++;
       this.idOfWordSelected = id;
+      this.lastElemColumnSelected = column; // Almacenamos la columna del primer elemento de la selección
       this.idResultsMap.set(id, auxMap); // Asignamos al mapa global de combinaciones.
-    } else if (this.numWordsSelected === 1 && this.lastElemColumnSelected !== column) {
-      this.numWordsSelected = 0; // Reiniciamos el contador
-      this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
-      // Añadimos/modificamos par clave-valor
-      if (this.idOfWordSelected === id) {
-        auxMap.set(column, 1); // Segundo botón de la combinación pulsado; Valor correcto; Color verde
-        this.idResultsMap.set(id, auxMap); // Correcto
-      } else {
-        auxMap.set(column, 0); // Segundo botón de la combinación pulsado; Valor correcto; Color verde
-        this.idResultsMap.set(id, auxMap); // Incorrecto
-      }
+    } else if (this.numWordsSelected === 1) {
+        this.numWordsSelected = 0; // Reiniciamos el contador
+        if (this.lastElemColumnSelected !== column && this.lastElemColumnSelected !== 2) { /* Si estan en columnas diferentes*/
+          this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
+          // Añadimos/modificamos par clave-valor
+          if (this.idOfWordSelected === id) {
+            auxMap.set(column, 1); // Segundo botón de la combinación pulsado; Valor correcto; Color verde
+            this.idResultsMap.set(id, auxMap); // Correcto
+            /* Ponemos el primer elemento con el color adecuado para una eleccion correcta */
+            if (column - 1 === 0) {
+              firstAuxMap.set(0, 1);
+            } else {
+              firstAuxMap.set(1, 1);
+            }
+          } else {
+            auxMap.set(column, 0); // Segundo botón de la combinación pulsado; Valor incorrecto; Color rojo
+            this.idResultsMap.set(id, auxMap); // Incorrecto
+            /* Ponemos el primer elemento con el color adecuado para una eleccion incorrecta */
+            if (column - 1 === 0) {
+              firstAuxMap.set(0, 0);
+            } else {
+              firstAuxMap.set(1, 0);
+            }
+          }
+          /* Actualizamos el resultado en el mapa de mapas general */
+          this.idResultsMap.set(this.idOfWordSelected, firstAuxMap);
+
+        } else { /* Si el segundo elemento seleccionado esta en la misma columna que el primero */
+          firstAuxMap.set(column, 3); // Devolvemos al primer elemento el color por defecto
+          this.idResultsMap.set(this.idOfWordSelected, firstAuxMap); // Asignamos al mapa global de combinaciones.
+          this.numWordsSelected = 0; // Reiniciamos el contador
+          this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
+        }
     } else {
       this.numWordsSelected = 0; // Reiniciamos el contador
       this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
