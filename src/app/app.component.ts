@@ -5,6 +5,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { Pages } from './interfaces/pages';
+import { timer } from 'rxjs/observable/timer'; // SEJMM DS004 SplashScreen + animation
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,8 @@ import { Pages } from './interfaces/pages';
 export class AppComponent {
 
   public appPages: Array<Pages>;
+
+  showSplash = true; // SEJMM DS004 SplashScreen + animation
 
   constructor(
     private platform: Platform,
@@ -50,6 +53,10 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
+      // SEJMM INI DS004; SplashScreen + Animation
+      // Timer para controlar la visibilidad de la animación
+      timer(3000).subscribe(() => this.showSplash = false);
     }).catch(() => {});
   }
 

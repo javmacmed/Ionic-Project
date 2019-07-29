@@ -7,6 +7,9 @@ import { IonicModule } from '@ionic/angular';
 
 import { UnePalabrasPage } from './une-palabras.page';
 
+// SEJMM DS0003.3 Tuberia para reordenar aleatoriamente un array.
+import { AlterOrderPipe } from '../../alter.order.pipe';
+
 const routes: Routes = [
   {
     path: '',
@@ -21,6 +24,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [UnePalabrasPage]
+  declarations: [UnePalabrasPage, AlterOrderPipe] // SEJMM DS0003.3 Declaracion de clase AlterOrderPipe.
 })
 export class UnePalabrasPageModule {}

@@ -1,10 +1,14 @@
 /**
- * SEJMM DS003 09/06/2019; Servicio para controlar nuestra base de datos SQLite
+ * Descripción: Componente que implementa toda la lógica asociada a los elementos HTML en une-palabras.page.html
+ * First version: SEJMM DS003 09/06/2019; Desarrollo 'Une Palabras'; Primera Fase; Lógica base.
+ * Update 25/07/2019; SEJMM DS003.1: Implementación de Timer asincrono para devolver el estado por defecto a las duplas incorrectas pasado un tiempo determinado.
  * */
 
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService, Elem } from './../../services/database.service'; // Importamos clases DB
 import { Observable } from 'rxjs';
+import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
+import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
 
 @Component({
   selector: 'app-une-palabras',
@@ -19,8 +23,11 @@ export class UnePalabrasPage implements OnInit {
   animals: Elem[] = [];
   idResultsMap = new Map<number, Map<number, number>>(); // Mapa para almacenar las relaciones id-resultado del juego en función de las columnas
   animal = {}; // NOTA: Esto sería para añadir en el ts de la pagina formulario para añadir elementos a la lista que sea
+  numDuplasCorrectas = 0; // Numero de duplas correctas. Usadas para determinar una condición final de juego (Fácil)
 
-  constructor(private db: DatabaseService) { }
+  constructor(private db: DatabaseService, // DS002: Base de datos SQLite
+    public popoverCtrl: PopoverController // DS006: Implementación de ion-popover para mostrar el final del juego
+    ) { }
 
   ngOnInit() {
     this.db.getDatabaseState().subscribe(rdy => {
@@ -71,20 +78,41 @@ export class UnePalabrasPage implements OnInit {
   selectWords(id: number, column: number) {
     const auxMap = this.idResultsMap.get(id); // Declaramos mapa auxiliar y obtenemos el mapa asociado al id pasado como parametro
     const firstAuxMap = this.idResultsMap.get(this.idOfWordSelected);
-    if (this.numWordsSelected === 0) {
-      auxMap.set(column, 2); // Primer botón de la combinación pulsado; Color amarillo
-      this.numWordsSelected++;
-      this.idOfWordSelected = id;
-      this.lastElemColumnSelected = column; // Almacenamos la columna del primer elemento de la selección
-      this.idResultsMap.set(id, auxMap); // Asignamos al mapa global de combinaciones.
-    } else if (this.numWordsSelected === 1) {
+
+    /* Antes de nada comprobaremos que el elemento pulsado no se trate de una dupla ya establecida como correcta (verde)*/
+    if (auxMap.get(column) !== 1) {
+      /* Ahora procederemos con la lógica ejecucional del juego */
+      if (this.numWordsSelected === 0) {
+        /** Primer botón de la combinación pulsado;
+         *  Color amarillo.
+         * **/
+        auxMap.set(column, 2);
+        this.numWordsSelected++;
+        this.idOfWordSelected = id;
+        this.lastElemColumnSelected = column; // Almacenamos la columna del primer elemento de la selección
+      } else if (this.numWordsSelected === 1) {
         this.numWordsSelected = 0; // Reiniciamos el contador
         if (this.lastElemColumnSelected !== column && this.lastElemColumnSelected !== 2) { /* Si estan en columnas diferentes*/
           this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
-          // Añadimos/modificamos par clave-valor
+          /** Añadimos/modificamos par clave-valor **/
           if (this.idOfWordSelected === id) {
-            auxMap.set(column, 1); // Segundo botón de la combinación pulsado; Valor correcto; Color verde
-            this.idResultsMap.set(id, auxMap); // Correcto
+          /** Segundo botón de la combinación pulsado; Valor correcto;
+          * Color verde.
+          **/
+            auxMap.set(column, 1);  // Correcto
+            this.numDuplasCorrectas++; // Incrementamos numero de duplas correctas
+
+            /**** SEJMM DS003.2;
+             * Comprobar condición FINAL DE JUEGO (Fácil)
+             * ****/
+            if (this.numDuplasCorrectas === this.animals.length) {
+              (async () => {
+                await this.delay(1000);
+                // alert('HAS GANADO!!');
+                this.notifications(); // DS006: Implementación de ion-popover para mostrar el final del juego
+              })();
+            }
+
             /* Ponemos el primer elemento con el color adecuado para una eleccion correcta */
             if (column - 1 === 0) {
               firstAuxMap.set(0, 1);
@@ -92,27 +120,47 @@ export class UnePalabrasPage implements OnInit {
               firstAuxMap.set(1, 1);
             }
           } else {
-            auxMap.set(column, 0); // Segundo botón de la combinación pulsado; Valor incorrecto; Color rojo
-            this.idResultsMap.set(id, auxMap); // Incorrecto
+          /** Segundo botón de la combinación pulsado; Valor incorrecto;
+          * Color rojo.
+          * **/
+            auxMap.set(column, 0);  // Incorrecto
+            /* Usaremos función asíncrona para modificar el mapa de datos pasado un tiempo determinado;  SEJMM DS003.1*/
+            (async () => {
+              await this.delay(750);
+              auxMap.set(column, 3); // Por defecto
+            })();
+
             /* Ponemos el primer elemento con el color adecuado para una eleccion incorrecta */
             if (column - 1 === 0) {
               firstAuxMap.set(0, 0);
+              /* Usaremos función asíncrona para modificar el mapa de datos pasado un tiempo determinado;  SEJMM DS003.1*/
+              (async () => {
+                await this.delay(750);
+                firstAuxMap.set(0, 3); // Por defecto
+              })();
             } else {
               firstAuxMap.set(1, 0);
+              /* Usaremos función asíncrona para modificar el mapa de datos pasado un tiempo determinado;  SEJMM DS003.1*/
+              (async () => {
+                await this.delay(750);
+                firstAuxMap.set(1, 3); // Por defecto
+              })();
             }
           }
           /* Actualizamos el resultado en el mapa de mapas general */
-          this.idResultsMap.set(this.idOfWordSelected, firstAuxMap);
+          // No necesario, dado que al apuntar a este mapa los get que asociamos a los mapas auxiliares modificamos el mapa final.
+          // He aquí la evidencia:
+          // this.idResultsMap.set(this.idOfWordSelected, firstAuxMap);
 
         } else { /* Si el segundo elemento seleccionado esta en la misma columna que el primero */
           firstAuxMap.set(column, 3); // Devolvemos al primer elemento el color por defecto
-          this.idResultsMap.set(this.idOfWordSelected, firstAuxMap); // Asignamos al mapa global de combinaciones.
           this.numWordsSelected = 0; // Reiniciamos el contador
           this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
         }
-    } else {
-      this.numWordsSelected = 0; // Reiniciamos el contador
-      this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
+      } else {
+        this.numWordsSelected = 0; // Reiniciamos el contador
+        this.lastElemColumnSelected = 2; // Reiniciamos la columna anterior a por defecto (no determinada)
+      }
     }
   }
 
@@ -138,5 +186,46 @@ export class UnePalabrasPage implements OnInit {
         confirm('Valor erroneo');
         break;
     }
+  }
+
+  setElementColourB(id: number, column: number):string {
+    let auxMap = new Map<number, number>(); // Declaramos mapa auxiliar
+    auxMap = this.idResultsMap.get(id);
+    switch (auxMap.get(column)) {
+      case 3:
+        return 'light';
+      case 2:
+        return 'warning';
+      case 1:
+        return 'success';
+      case 0:
+        return 'danger';
+      default:
+        confirm('Valor erroneo');
+        break;
+    }
+  }
+
+/**
+ * Crea un delay/sleep/Timer o callback en la aplicación. Usado con la función async/await permitiremos que dicho callback sea asincrono al resto de la app.
+ * SEJMM DS003.1; Implementación de Timer asincrono para devolver el estado por defecto a las duplas incorrectas pasado un tiempo determinado.
+ * @param ms: Tiempo usado en el timer.
+ */
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
+  /**
+   * SEJMM 28/07/2019 DS006: Implementación de ion-popover para mostrar el final del juego
+   */
+  async notifications() {
+    const popover = await this.popoverCtrl.create({
+        component: NotificationsComponent,
+        event: null,
+        animated: true,
+        showBackdrop: true, // Muestra fondo translucido de la page que invocó tras el popover
+        backdropDismiss: false // Evita que el popover desaparezca al pulsar sobre el backdrop
+    });
+    return await popover.present();
   }
 }

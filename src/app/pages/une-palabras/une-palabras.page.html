@@ -9,31 +9,46 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-row>
-    
+  <ion-row> 
     <ion-col>
-      <ion-list-header>
-        <ion-label>Español</ion-label>
-      </ion-list-header>
-      <ion-list>
-        <ion-item [ngClass]="{'si': setElementColour(animal.id, 0) == 1, 'no': setElementColour(animal.id, 0) == 0, 'eligiendo': setElementColour(animal.id, 0) == 2 , 'default': setElementColour(animal.id, 0) == 3}" *ngFor="let animal of animals" (click)="selectWords(animal.id,0)" [id]="animal.id">
-          <ion-label>
-            <p [ngClass]="{'cleanText': setElementColour(animal.id, 0) == 0}">{{ animal.spanishName }}</p>
+      <div class="ion-text-center">
+          <ion-text color="light" class="columnTitle"><h3>Español</h3></ion-text>
+      </div>
+      <ion-list class="bg-list">
+        <!-- <ion-list-header>
+            <ion-label class="ion-text-center">
+                <ion-text color="light" class="columnTitle"><h2>Español</h2></ion-text>
+            </ion-label>
+        </ion-list-header> -->
+        <ion-button fill="clear" expand="block" [ngClass]="{'sib': setElementColour(animal.id, 0) == 1, 'nob': setElementColour(animal.id, 0) == 0, 'eligiendob': setElementColour(animal.id, 0) == 2 , 'defaultb': setElementColour(animal.id, 0) == 3}" *ngFor="let animal of animals | alterOrder" (click)="selectWords(animal.id,0)" [id]="animal.id">
+            {{ animal.spanishName }}
+        </ion-button>
+        <!-- <ion-item class="ion-text-center" [ngClass]="{'si': setElementColour(animal.id, 0) == 1, 'no': setElementColour(animal.id, 0) == 0, 'eligiendo': setElementColour(animal.id, 0) == 2 , 'default': setElementColour(animal.id, 0) == 3}" lines="full" *ngFor="let animal of animals | alterOrder" (click)="selectWords(animal.id,0)" [id]="animal.id">
+          <ion-label class="ion-text-center">
+            <ion-text [ngClass]="{'cleanText': setElementColour(animal.id, 0) == 0 || setElementColour(animal.id, 0) == 1}">{{ animal.spanishName }}</ion-text>
           </ion-label>
-        </ion-item>
+        </ion-item> -->
       </ion-list>
     </ion-col>
 
     <ion-col>
-      <ion-list-header>
-        <ion-label>Inglés</ion-label>
-      </ion-list-header>
-      <ion-list>
-        <ion-item [ngClass]="{'si': setElementColour(animal.id, 1) == 1, 'no': setElementColour(animal.id, 1) == 0, 'eligiendo': setElementColour(animal.id, 1) == 2 , 'default': setElementColour(animal.id, 1) == 3}" *ngFor="let animal of animals" (click)="selectWords(animal.id,1)" [id]="animal.id">
+      <div class="ion-text-center">
+          <ion-text color="light" class="columnTitle"><h3>Inglés</h3></ion-text>
+      </div>
+      <ion-list class="bg-list">
+        <!-- <ion-list-header>
+            <ion-label class="ion-text-center">
+                <ion-text color="light" class="columnTitle"><h2>Inglés</h2></ion-text>
+            </ion-label>
+        </ion-list-header> -->
+        <ion-button fill="clear" expand="block" [ngClass]="{'sib': setElementColour(animal.id, 1) == 1, 'nob': setElementColour(animal.id, 1) == 0, 'eligiendob': setElementColour(animal.id, 1) == 2 , 'defaultb': setElementColour(animal.id, 1) == 3}" *ngFor="let animal of animals | alterOrder" (click)="selectWords(animal.id,1)" [id]="animal.id">
+          {{ animal.englishName }}
+        </ion-button>
+        <!-- <ion-item class="ion-text-center" [ngClass]="{'si': setElementColour(animal.id, 1) == 1, 'no': setElementColour(animal.id, 1) == 0, 'eligiendo': setElementColour(animal.id, 1) == 2 , 'default': setElementColour(animal.id, 1) == 3}" lines="full" *ngFor="let animal of animals | alterOrder" (click)="selectWords(animal.id,1)" [id]="animal.id">
           <ion-label>
-            <p [ngClass]="{'cleanText': setElementColour(animal.id, 1) == 0}">{{ animal.englishName }}</p>
+            <ion-text [ngClass]="{'cleanText': setElementColour(animal.id, 1) == 0 || setElementColour(animal.id, 1) == 1}">{{ animal.englishName }}</ion-text>
           </ion-label>
-        </ion-item>
+        </ion-item> -->
       </ion-list>
     </ion-col>
 

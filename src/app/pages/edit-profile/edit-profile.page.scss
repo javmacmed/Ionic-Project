@@ -1,6 +1,6 @@
 :host {
   ion-content {
-    --background: linear-gradient(-135deg, var(--ion-color-medium), var(--ion-color-light))
+    --background: linear-gradient(-135deg, var(--ion-color-secondary), var(--ion-color-dark)); // Color de fondo Edit-Profile
   }
 }
 
@@ -11,7 +11,7 @@
     background-color: #fff;
     ion-card-content {
       padding: 32px;
-      background-color: var(--ion-color-primary);
+      background-color: linear-gradient(-135deg, var(--ion-color-secondary), var(--ion-color-dark));
       color: #fff;
       text-align: center;
 

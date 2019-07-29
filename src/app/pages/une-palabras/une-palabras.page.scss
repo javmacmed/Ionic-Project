@@ -1,15 +1,53 @@
-.si{
-    background-color: #6c5;
-}
-.no{
-    background-color: #933;
-}
-.eligiendo{
-    background-color: yellow;
-}
-.default{
-    background-color: white;
-}
-.cleanText{
+// .si{
+//     background-color: #6c5;
+// }
+// .no{
+//     background-color: #933;
+// }
+// .eligiendo{
+//     background-color: yellow;
+// }
+// .default{
+//     background-color: white;
+// }
+// .cleanText{
+//     color: white;
+// }
+//////////
+.sib{
+    background: var(--ion-color-success);
+    border-radius: 4px 4px 4px 4px;
     color: white;
+}
+.nob{
+    background: #933 !important; 
+    border-radius: 4px 4px 4px 4px;
+    color: white;
+}
+.eligiendob{
+    background: yellow !important;
+    border-radius: 4px 4px 4px 4px;
+    color: black;
+}
+.defaultb{
+    background: white !important;
+    border-radius: 4px 4px 4px 4px;
+    color:black;
+}
+
+///////////////
+.columnTitle{
+    font-weight: bold;
+}
+
+.bg-list{
+    background: transparent; // SEJMM Color fondo lista en UnePalabras (Todas las fases)
+    padding: 0%;
+}
+ion-content {
+    --background: linear-gradient(-135deg, var(--ion-color-secondary), var(--ion-color-dark)); // SEJMM Color fondo pantalla UnePalabras (Todas las fases)
+}
+
+ion-button{
+    box-shadow: none;
 }
