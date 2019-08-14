@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-text color="light">
+        <ion-text color="light" class="fw700">Elige temática</ion-text>
+      </ion-text>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding>
+ 
+      <ion-list class="bg-list">
+        <ion-button expand="block" *ngFor="let table of tablesArrayName" (click)="goToUnePalabras(table)">
+            {{ table }}
+        </ion-button>
+      </ion-list>
+    
+</ion-content>

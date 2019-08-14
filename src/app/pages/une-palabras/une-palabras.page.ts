@@ -9,6 +9,7 @@ import { DatabaseService, Elem } from './../../services/database.service'; // Im
 import { Observable } from 'rxjs';
 import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-une-palabras',
@@ -21,29 +22,46 @@ export class UnePalabrasPage implements OnInit {
   lastElemColumnSelected = 2; // Última columna seleccionada; 0: izquierda, 1: derecha, 2: No determinada
   idOfWordSelected: number;
   animals: Elem[] = [];
+  tableArrayElements: Elem[] = []; // DS007: Preparación multitabla
   idResultsMap = new Map<number, Map<number, number>>(); // Mapa para almacenar las relaciones id-resultado del juego en función de las columnas
   animal = {}; // NOTA: Esto sería para añadir en el ts de la pagina formulario para añadir elementos a la lista que sea
   numDuplasCorrectas = 0; // Numero de duplas correctas. Usadas para determinar una condición final de juego (Fácil)
+  argumentos = null; // DS007: Preparación multitabla
 
   constructor(private db: DatabaseService, // DS002: Base de datos SQLite
-    public popoverCtrl: PopoverController // DS006: Implementación de ion-popover para mostrar el final del juego
+    public popoverCtrl: PopoverController, // DS006: Implementación de ion-popover para mostrar el final del juego
+    private activeRoute: ActivatedRoute // DS007: Preparación multitabla
     ) { }
 
   ngOnInit() {
+    this.argumentos = this.activeRoute.snapshot.paramMap.get('tableName'); // DS007: Preparación multitabla
     this.db.getDatabaseState().subscribe(rdy => {
       if (rdy) {
-        this.db.getAnimals().subscribe(anim => {
-          this.animals = anim;
+        this.db.loadTable(this.argumentos);
+        this.db.getSelectedTable().subscribe(table => {
+          this.tableArrayElements = table;
           /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
             modo definiremos como valor por defecto 3 (Color por defecto, no elegido).
           */
-          for (const id of this.animals) {
+          for (const id of this.tableArrayElements) {
             const auxMap = new Map<number, number>();
             auxMap.set(0, 3); // Columna izquierda; Color default
             auxMap.set(1, 3); // Columna derecha; Color default
             this.idResultsMap.set(id.id, auxMap);
           }
         });
+        // this.db.getAnimals().subscribe(anim => {
+        //   this.animals = anim;
+        //   /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
+        //     modo definiremos como valor por defecto 3 (Color por defecto, no elegido).
+        //   */
+        //   for (const id of this.animals) {
+        //     const auxMap = new Map<number, number>();
+        //     auxMap.set(0, 3); // Columna izquierda; Color default
+        //     auxMap.set(1, 3); // Columna derecha; Color default
+        //     this.idResultsMap.set(id.id, auxMap);
+        //   }
+        // });
       }
     });
   }
@@ -105,7 +123,7 @@ export class UnePalabrasPage implements OnInit {
             /**** SEJMM DS003.2;
              * Comprobar condición FINAL DE JUEGO (Fácil)
              * ****/
-            if (this.numDuplasCorrectas === this.animals.length) {
+            if (this.numDuplasCorrectas === this.tableArrayElements.length) {
               (async () => {
                 await this.delay(1000);
                 // alert('HAS GANADO!!');
@@ -188,7 +206,7 @@ export class UnePalabrasPage implements OnInit {
     }
   }
 
-  setElementColourB(id: number, column: number):string {
+  setElementColourB(id: number, column: number): string {
     let auxMap = new Map<number, number>(); // Declaramos mapa auxiliar
     auxMap = this.idResultsMap.get(id);
     switch (auxMap.get(column)) {

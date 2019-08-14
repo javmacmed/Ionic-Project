@@ -9,7 +9,7 @@ import { PopoverController } from '@ionic/angular';
 export class NotificationsComponent implements OnInit {
 
   // @ViewChild(UnePalabrasPage) hijo: UnePalabrasPage; En caso de que deseasemos trabajar con alguna variable
-
+  congratulationsCover = 'assets/img/minions.gif'; // SEJMM DS006; Imagen portada modificada
   constructor(public popoverCtrl: PopoverController) { } // DS006: Implementación de ion-popover para mostrar el final del juego
 
   ngOnInit() {

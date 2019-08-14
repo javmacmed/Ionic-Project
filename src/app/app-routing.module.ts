@@ -10,7 +10,9 @@ const routes: Routes = [
   { path: 'about', loadChildren: './pages/about/about.module#AboutPageModule' },
   { path: 'settings', loadChildren: './pages/settings/settings.module#SettingsPageModule' },
   { path: 'edit-profile', loadChildren: './pages/edit-profile/edit-profile.module#EditProfilePageModule' },
-  { path: 'une-palabras', loadChildren: './pages/une-palabras/une-palabras.module#UnePalabrasPageModule' }
+  { path: 'une-palabras/:tableName', loadChildren: './pages/une-palabras/une-palabras.module#UnePalabrasPageModule' }, // SEJMM DS007; Preparación multitabla
+  { path: 'manage-tables', loadChildren: './pages/manage-tables/manage-tables.module#ManageTablesPageModule' },
+  { path: 'select-table', loadChildren: './pages/select-table/select-table.module#SelectTablePageModule' }
 ];
 
 @NgModule({

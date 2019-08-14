@@ -30,6 +30,8 @@ export class DatabaseService {
 
   users = new BehaviorSubject([]);
   animals = new BehaviorSubject([]);
+  selectedTable = new BehaviorSubject([]); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
+  tablesArrayName = new BehaviorSubject([]); // SEJMM DS007; Preparamos para multitabla.
 
   constructor(private plt: Platform, private sqlitePorter: SQLitePorter, private sqlite: SQLite, private http: HttpClient) {
     this.plt.ready().then(() => {
@@ -75,13 +77,19 @@ export class DatabaseService {
     return this.animals.asObservable();
   }
 
+  /**
+   * SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
+   */
+  getSelectedTable(): Observable<Elem[]> {
+    return this.selectedTable.asObservable();
+  }
 
   /**
    * @description: Carga lista de usuarios
    */
   loadUsers() {
     return this.database.executeSql('SELECT * FROM users', []).then(data => {
-      let users: User[] = [];
+      const users: User[] = [];
 
       if (data.rows.length > 0) {
         for (let i = 0; i < data.rows.length; i++) {
@@ -100,7 +108,7 @@ export class DatabaseService {
    * @description: Añade usuario a la tabla users
    */
   addUsers(userName: string, password: string) {
-    let data = [userName, password];
+    const data = [userName, password];
     return this.database.executeSql('INSERT INTO users (userName, password) VALUES (?, ?)', data).then(data => {
       this.loadUsers();
     });
@@ -129,10 +137,10 @@ export class DatabaseService {
   }
 
   /**
-   * @description: Borra usuario en base a un ID de users
+   * @description: Actualiza usuario en base a un ID de users
    */
   updateUser(user: User) {
-    let data = [user.userName, user.password];
+    const data = [user.userName, user.password];
     return this.database.executeSql(`UPDATE users SET userName = ?, password = ? WHERE id = ${user.id}`, data).then(data => {
       this.loadUsers();
     });
@@ -142,11 +150,11 @@ export class DatabaseService {
    * @description: Carga lista de animales
    */
   loadAnimals() {
-    let query = 'SELECT * FROM animals';
+    const query = 'SELECT * FROM animals';
     return this.database.executeSql(query, []).then(data => {
-      let animals: Elem[] = [];
+      const animals: Elem[] = [];
       if (data.rows.length > 0) {
-        for (var i = 0; i < data.rows.length; i++) {
+        for (let i = 0; i < data.rows.length; i++) {
           animals.push({
             id: data.rows.item(i).id,
             spanishName: data.rows.item(i).spanishName,
@@ -157,18 +165,19 @@ export class DatabaseService {
       this.animals.next(animals);
     });
   }
+
   /**
    * @description: Añade un animal
    */
   addAnimal(spanishName: string, englishName: string) {
-    let data = [spanishName, englishName];
+    const data = [spanishName, englishName];
     return this.database.executeSql('INSERT INTO animals (spanishName, englishName) VALUES (?, ?)', data).then(data => {
       this.loadAnimals();
     });
   }
 
   /**
-   * @description: Obtiene y devuelve animal en base a un ID de users
+   * @description: Obtiene y devuelve animal en base a un ID de animals
    */
   getAnimal(id: number): Promise<Elem> {
     return this.database.executeSql('SELECT * FROM animals WHERE id = ?', [id]).then(data => {
@@ -190,12 +199,123 @@ export class DatabaseService {
   }
 
   /**
-   * @description: Borra animal en base a un ID de animals
+   * @description: Actualiza animal en base a un ID de animals
    */
-  updateAnimal(user: User) {
-    let data = [user.userName, user.password];
-    return this.database.executeSql(`UPDATE animals SET spanishName = ?, englishName = ? WHERE id = ${user.id}`, data).then(data => {
+  updateAnimal(animal: Elem) {
+    const data = [animal.spanishName, animal.englishName];
+    return this.database.executeSql(`UPDATE animals SET spanishName = ?, englishName = ? WHERE id = ${animal.id}`, data).then(data => {
       this.loadAnimals();
     });
   }
+
+  /**** SEJMM INI DS007; Preparar base de datos para las multiples tablas creadas mediante "Crea tu tabla" ****/
+  /**
+   * 07/08/2019 - First version
+   * SEJMM DS007
+   * @description: Carga lista de elementos
+   * @param tableName
+   */
+  loadTable(tableName: string) {
+    let query = 'SELECT * FROM ';
+    query = query.concat('animals');
+    return this.database.executeSql(query, []).then(data => {
+      const table: Elem[] = [];
+      if (data.rows.length > 0) {
+        for (let i = 0; i < data.rows.length; i++) {
+          table.push({
+            id: data.rows.item(i).id,
+            spanishName: data.rows.item(i).spanishName,
+            englishName: data.rows.item(i).englishName
+          });
+        }
+      }
+      this.selectedTable.next(table);
+    });
+  }
+  /**
+   * 07/08/2019 - First version
+   * SEJMM DS007
+   * @description: Añade un elemento con @param spanishName y @param englishName a la tabla @param tableName
+   */
+  addTableElement(tableName: string, spanishName: string, englishName: string) {
+    const data = [spanishName, englishName];
+    return this.database.executeSql('INSERT INTO ' + tableName + ' (spanishName, englishName) VALUES (?, ?)', data).then(data => {
+      this.loadTable(tableName);
+    });
+  }
+
+  /**
+   * 07/08/2019 - First version
+   * SEJMM DS007
+   * @description: Obtiene y devuelve un elemento de la tabla deseada de la DB en base a un ID
+   * @param id: ID para determinar la fila que deseamos obtener
+   * @param tableName: Nombre de la tabla desde la cual queremos obtener el elemento
+   */
+  getTableElement(id: number, tableName: string): Promise<Elem> {
+    return this.database.executeSql('SELECT * FROM ? WHERE id = ?', [tableName, id]).then(data => {
+      return {
+        id: data.rows.item(0).id,
+        spanishName: data.rows.item(0).spanishName,
+        englishName: data.rows.item(0).englishName
+      };
+    });
+  }
+
+ /**
+   * 07/08/2019 - First version
+   * SEJMM DS007
+   * @description: Borra un elemento de la tabla deseada de la DB en base a un ID
+   * @param id: ID para determinar la fila que deseamos borrar
+   * @param tableSelected: Nombre de la tabla desde la cual queremos borrar el elemento
+   */
+  deleteTable(id: number, tableSelected: string) {
+    return this.database.executeSql('DELETE FROM ? WHERE id = ?', [tableSelected, id]).then(_ => {
+      this.loadTable(tableSelected);
+    });
+  }
+
+  /**
+   * 07/08/2019 - First version
+   * SEJMM DS007
+   * @description: Dado un elemento (Elem), actualiza un elemento de la tabla deseada
+   * @param elemento
+   * @param tablaSelected
+   */
+  updateTableElement(elemento: Elem, tablaSelected: string) {
+    const data = [elemento.spanishName, elemento.englishName];
+    return this.database.executeSql(`UPDATE ${tablaSelected} SET spanishName = ?, englishName = ? WHERE id = ${elemento.id}`, data).then(data => {
+      this.loadTable(tablaSelected);
+    });
+  }
+
+  /**
+   * 11/08/2019 - First version
+   * SEJMM DS007
+   * @description: Devuelve un array con los nombres de todas las tablas existentes en la base de datos. (Lo ideamos como un observable para que en
+   * el caso de la pagina "Crea tu Tabla", cuando añadamos una tabla nueva, al estar suscritos como observable, refresquemos la lista de tablas creadas).
+   */
+  getTables(): Observable<string[]> {
+    return this.tablesArrayName.asObservable();
+  }
+
+   /**
+   * 11/08/2019 - First version
+   * SEJMM DS007
+   * @description: Carga lista de tablas en la DB y las almacena en "tablesArrayName".
+   */
+  loadTables() {
+    const query = `SELECT tbl_name FROM sqlite_master WHERE type = 'table' AND tbl_name NOT LIKE 'sqlite_%'`;
+    return this.database.executeSql(query, []).then(data => {
+      const tables: string[] = [];
+      if (data.rows.length > 0) {
+        for (let i = 0; i < data.rows.length; i++) {
+          tables.push(data.rows.item(i).tbl_name);
+        }
+      }
+      this.tablesArrayName.next(tables);
+    });
+  }
+
+  /**** SEJMM FIN DS007; Preparar base de datos para las multiples tablas creadas mediante "Crea tu tabla" ****/
+
 }
