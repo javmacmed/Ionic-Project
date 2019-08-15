@@ -21,10 +21,8 @@ export class UnePalabrasPage implements OnInit {
   numWordsSelected = 0;
   lastElemColumnSelected = 2; // Última columna seleccionada; 0: izquierda, 1: derecha, 2: No determinada
   idOfWordSelected: number;
-  animals: Elem[] = [];
   tableArrayElements: Elem[] = []; // DS007: Preparación multitabla
   idResultsMap = new Map<number, Map<number, number>>(); // Mapa para almacenar las relaciones id-resultado del juego en función de las columnas
-  animal = {}; // NOTA: Esto sería para añadir en el ts de la pagina formulario para añadir elementos a la lista que sea
   numDuplasCorrectas = 0; // Numero de duplas correctas. Usadas para determinar una condición final de juego (Fácil)
   argumentos = null; // DS007: Preparación multitabla
 
@@ -50,39 +48,8 @@ export class UnePalabrasPage implements OnInit {
             this.idResultsMap.set(id.id, auxMap);
           }
         });
-        // this.db.getAnimals().subscribe(anim => {
-        //   this.animals = anim;
-        //   /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
-        //     modo definiremos como valor por defecto 3 (Color por defecto, no elegido).
-        //   */
-        //   for (const id of this.animals) {
-        //     const auxMap = new Map<number, number>();
-        //     auxMap.set(0, 3); // Columna izquierda; Color default
-        //     auxMap.set(1, 3); // Columna derecha; Color default
-        //     this.idResultsMap.set(id.id, auxMap);
-        //   }
-        // });
       }
     });
-  }
-
-  // NOTA: Estas dos siguientes funciones serían para añadir u obtener en el ts de la pagina formulario
-  // para añadir elementos a la lista que sea.
-  /**
-   * @description: Obtiene un animal desde la tabla dado un ID.
-   * @param id: Id del elemento seleccionado por el usuario
-   */
-  getAnimal(id: number): Promise<Elem> {
-    return this.db.getAnimal(id);
-  }
-  /**
-   * @description: Añade un animal a la tabla
-   */
-  addAnimal() {
-    this.db.addAnimal(this.animal['spanishName'], this.animal['englishName'])
-      .then(_ => {
-        this.animal = {};
-      });
   }
 
   /**
