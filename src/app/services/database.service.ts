@@ -127,7 +127,7 @@ export class DatabaseService {
    * @param id: ID para determinar la fila que deseamos borrar
    * @param tableSelected: Nombre de la tabla desde la cual queremos borrar el elemento
    */
-  deleteTable(id: number, tableSelected: string) {
+  deleteTableElement(id: number, tableSelected: string) {
     return this.database.executeSql('DELETE FROM ? WHERE id = ?', [tableSelected, id]).then(_ => {
       this.loadTable(tableSelected);
     });
@@ -144,6 +144,30 @@ export class DatabaseService {
     const data = [elemento.spanishName, elemento.englishName];
     return this.database.executeSql(`UPDATE ${tablaSelected} SET spanishName = ?, englishName = ? WHERE id = ${elemento.id}`, data).then(data => {
       this.loadTable(tablaSelected);
+    });
+  }
+
+  /**
+   * 15/08/2019 - First version
+   * SEJMM DS007
+   * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
+   */
+  createTable(tableName: string) {
+    return this.database.executeSql('CREATE TABLE IF NOT EXISTS ? (id INTEGER PRIMARY KEY AUTOINCREMENT, spanishName TEXT NOT NULL, englishName TEXT NOT NULL)', [tableName]).then(data => {
+      this.loadTables();
+    });
+  }
+
+  /**
+   * 18/08/2019 - First version
+   * SEJMM DS007
+   * @description: Borra una tabla de la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
+   */
+  deleteTable(tableName: string) {
+    let query = 'DROP TABLE IF EXISTS ';
+    query = query.concat(tableName);
+    return this.database.executeSql(query, []).then(data => {
+      this.loadTables();
     });
   }
 

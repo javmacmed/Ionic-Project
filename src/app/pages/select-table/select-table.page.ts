@@ -5,7 +5,9 @@
 
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService, Elem } from './../../services/database.service'; // Importamos clases DB
-import {NavController } from '@ionic/angular'; // SEJMM DS007: Preparación multitabla
+import {
+  NavController} from '@ionic/angular'; // SEJMM DS007: Preparación multitabla
+
 @Component({
   selector: 'app-select-table',
   templateUrl: './select-table.page.html',

@@ -3,7 +3,7 @@ INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('1', 'León
 INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('2', 'Tigre', 'Tiger');
 INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('3', 'Perro', 'Dog');
 INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('4', 'Gato', 'Cat');
-INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('5', 'Loro', 'Parrot');
+INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('5', 'Ornitorrinco', 'Platypus');
 INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('6', 'Pájaro', 'Bird');
 INSERT or IGNORE INTO Animales(id, spanishName, englishName) VALUES ('7', 'Delfín', 'Dolphin');
 

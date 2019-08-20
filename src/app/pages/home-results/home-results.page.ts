@@ -111,4 +111,7 @@ export class HomeResultsPage {
     this.navCtrl.navigateRoot('/select-table');
   }
 
+  goToManageTables() {
+    this.navCtrl.navigateRoot('/manage-tables');
+  }
 }
