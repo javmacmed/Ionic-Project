@@ -9,5 +9,60 @@
 </ion-header>
 
 <ion-content>
-  <ion-input placeholder="Insertar titulo"></ion-input>
+  <form [formGroup]="validation_form" (ngSubmit)="onSubmit(validation_form.value)">
+
+  <!-- Nombre tabla -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Nombre de tabla</ion-label>
+      <ion-input formControlName="tableName" type="text"></ion-input>
+    </ion-item>
+    <div class="validation-errors">
+      <ng-container *ngFor="let validation of validation_messages.tableName">
+        <div class="error-message"
+          *ngIf="validation_form.get('tableName').hasError(validation.type) && (validation_form.get('tableName').dirty || validation_form.get('tableName').touched)">
+          <ion-icon name="information-circle-outline"></ion-icon> {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+
+  <!-- Nombre español elemento  -->
+    <ion-item class="submit-btn">
+      <ion-label position="floating" color="primary">Español</ion-label>
+      <ion-input formControlName="tableName" type="text"></ion-input>
+    </ion-item>
+    <div class="validation-errors">
+      <ng-container *ngFor="let validation of validation_messages.tableName">
+        <div class="error-message"
+          *ngIf="validation_form.get('tableName').hasError(validation.type) && (validation_form.get('tableName').dirty || validation_form.get('tableName').touched)">
+          <ion-icon name="information-circle-outline"></ion-icon> {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+
+  <!-- Nombre inglés elemento  -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Inglés</ion-label>
+      <ion-input formControlName="tableName" type="text"></ion-input>
+    </ion-item>
+    <div class="validation-errors">
+      <ng-container *ngFor="let validation of validation_messages.tableName">
+        <div class="error-message"
+          *ngIf="validation_form.get('tableName').hasError(validation.type) && (validation_form.get('tableName').dirty || validation_form.get('tableName').touched)">
+          <ion-icon name="information-circle-outline"></ion-icon> {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+    
+    <ion-fab class="submit-btn" vertical="bottom" horizontal="center" slot="fixed">
+        <ion-fab-button color="danger" (click)="addElement()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <ion-button color="primary" class="submit-btn" expand="full" type="submit" [disabled]="!validation_form.valid">
+      Enviar
+    </ion-button>
+
+  </form>
+
 </ion-content>

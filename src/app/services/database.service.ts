@@ -153,7 +153,9 @@ export class DatabaseService {
    * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
    */
   createTable(tableName: string) {
-    return this.database.executeSql('CREATE TABLE IF NOT EXISTS ? (id INTEGER PRIMARY KEY AUTOINCREMENT, spanishName TEXT NOT NULL, englishName TEXT NOT NULL)', [tableName]).then(data => {
+    let query = 'CREATE TABLE IF NOT EXISTS ';
+    query = query.concat(tableName + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, spanishName TEXT NOT NULL, englishName TEXT NOT NULL)');
+    return this.database.executeSql(query, []).then(data => {
       this.loadTables();
     });
   }
