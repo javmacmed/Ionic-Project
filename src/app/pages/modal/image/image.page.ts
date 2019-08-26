@@ -15,6 +15,7 @@ export class ImagePage implements OnInit {
   // public image: any;
   validation_form: FormGroup; // Declaración del grupo de control de formulario
   elems_form: FormGroup;
+  newgroup: FormGroup;
   duplaCount = 0; // Contador del numero de duplas Español/Inglés añadidas al formulario
   validation_messages = { // Mensajes de validación para cada una de las validaciones realizadas en cada control de formulario
     'tableName': [
@@ -74,8 +75,10 @@ export class ImagePage implements OnInit {
    * @description Incrementa el número de elementos de control y añade su dupla en español y en inglés.
    */
   addControl() {
-    this.elems_form.addControl('spanishName' + (this.duplaCount + 1), new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])));
-    this.elems_form.addControl('englishName' + (this.duplaCount + 1), new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])));
+    this.newgroup = this.formBuilder.group({});
+    this.newgroup.addControl('spanishName', new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])));
+    this.newgroup.addControl('englishName', new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])));
+    this.elems_form.addControl('par' + (this.duplaCount + 1), this.newgroup);
     console.log('Contador duplas: ' + this.duplaCount);
     console.log('spanishName' + (this.duplaCount + 1));
     console.log('englishName' + (this.duplaCount + 1));
@@ -89,19 +92,17 @@ export class ImagePage implements OnInit {
   removeControl(control) {
     const controlKey: string = control.key;
     const controlSuffixNumber: number = parseInt(controlKey.match(/\d+/)[0], 10); // Parseamos identificador de control de entrada y obtenemos su parte numerica
-    const controlLeftColumnKey: string = 'spanishName' + (controlSuffixNumber);
-    console.log('Eliminar control derecho: ' + controlKey);
-    console.log('Eliminar control izquierdo: ' + controlLeftColumnKey);
+    console.log('Eliminar dupla de controles: ' + controlKey);
     this.elems_form.removeControl(control.key);
-    this.elems_form.removeControl(controlLeftColumnKey);
   }
   /**
    * @description Función encargada de implementar las llamadas adecuadas a la base de datos en función de los campos del formulario
    * @param values Valores introducidos en el formulario en formato json. PE: {username: "JmacArrow", name: "Javier", lastname: "M" ...
    */
-  onSubmit(values) {
-    console.log(values);
-    this.db.createTable(values.tableName);
+  onSubmit(tableNameValue, elemsFormValue) {
+    console.log('TableNameValues: ' + tableNameValue);
+    console.log('ElemsFormValue: ' + elemsFormValue);
+    this.db.createTable(tableNameValue.tableName);
     this.closeModal(); // Para finalizar, cerramos el modal
   }
 

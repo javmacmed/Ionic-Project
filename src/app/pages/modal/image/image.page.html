@@ -28,25 +28,27 @@
 
   <!-- Iteramos lista de controles para los elementos añadidos con el botón añadir dupla -->
   <form [formGroup]="elems_form">
-      <div *ngFor="let control of elems_form.controls | keyvalue; let i = index; let odd = odd; let even = even">
-
-        <ion-col size="5" *ngIf="even">
+    <ion-grid>
+      <!-- <ion-row *ngFor="let control of elems_form.controls | keyvalue; let i = index; let odd = odd; let even = even"> -->
+      <ion-row  *ngFor="let control of elems_form.controls | keyvalue; let i = index; let odd = odd; let even = even">
+        <ion-col size="5">
           <div>
             <ion-item>
-              <ion-input type="text" [formControlName]="control.key" placeHolder="español"></ion-input>
+              <ion-input type="text" [formControlName]="elems_form.get('control.spanishName')" placeHolder="español">
+              </ion-input>
             </ion-item>
           </div>
         </ion-col>
 
-        <ion-col size="5" *ngIf="odd" >
+        <ion-col size="5">
           <div>
             <ion-item>
-              <ion-input type="text" [formControlName]="control.key" placeHolder="inglés"></ion-input>
+              <ion-input type="text" [formControlName]="elems_form.get('control.englishName')" placeHolder="inglés"></ion-input>
             </ion-item>
           </div>
         </ion-col>
 
-        <ion-col size="2" >
+        <ion-col size="2">
           <div>
             <ion-fab horizontal="end" slot="fixed">
               <ion-fab-button color="light" size="small" (click)="removeControl(control)">
@@ -55,8 +57,10 @@
             </ion-fab>
           </div>
         </ion-col>
-      </div>
+      </ion-row>
+    </ion-grid>
   </form>
+
 
   <!-- Botón para añadir dupla de elementos a modo de formControls -->
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
