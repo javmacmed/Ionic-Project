@@ -12,11 +12,10 @@ import { DatabaseService } from 'src/app/services/database.service';
 })
 export class ImagePage implements OnInit {
   @Input() value: any; // Util para pasar un parametro. P.E: Nombre de tabla ya creada
-  // public image: any;
+
   validation_form: FormGroup; // Declaración del grupo de control de formulario
-  elems_form: FormGroup;
-  newgroup: FormGroup;
   duplaCount = 0; // Contador del numero de duplas Español/Inglés añadidas al formulario
+
   validation_messages = { // Mensajes de validación para cada una de las validaciones realizadas en cada control de formulario
     'tableName': [
       { type: 'required', message: 'Nombre de tabla requerido.' },
@@ -52,22 +51,10 @@ export class ImagePage implements OnInit {
         Validators.pattern('[a-zA-Z ]*'), // Se admitiran nombres de tabla que solo tengan letras y espacios
         Validators.required
       ]))
-      // ,
-      // name: new FormControl('', Validators.required),
-      // lastname: new FormControl('', Validators.required),
-      // email: new FormControl('', Validators.compose([
-      //   Validators.required,
-      //   Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
-      // ])),
-      // gender: new FormControl(this.genders[0], Validators.required),
-      // country_phone: this.country_phone_group,
-      // matching_passwords: this.matching_passwords_group,
-      // terms: new FormControl(true, Validators.pattern('true'))
     });
-    this.elems_form = this.formBuilder.group({
 
-    });
   }
+
   closeModal() {
     this.modalCtrl.dismiss('¡Tabla creada!');
   }
@@ -75,13 +62,12 @@ export class ImagePage implements OnInit {
    * @description Incrementa el número de elementos de control y añade su dupla en español y en inglés.
    */
   addControl() {
-    this.newgroup = this.formBuilder.group({});
-    this.newgroup.addControl('spanishName', new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])));
-    this.newgroup.addControl('englishName', new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])));
-    this.elems_form.addControl('par' + (this.duplaCount + 1), this.newgroup);
+    this.validation_form.addControl('par' + (this.duplaCount + 1), new FormGroup({
+      spanishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])),
+      englishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required]))
+    }));
     console.log('Contador duplas: ' + this.duplaCount);
-    console.log('spanishName' + (this.duplaCount + 1));
-    console.log('englishName' + (this.duplaCount + 1));
+
     this.duplaCount++;
     console.log('Contador duplas después: ' + this.duplaCount);
 
@@ -91,18 +77,30 @@ export class ImagePage implements OnInit {
    */
   removeControl(control) {
     const controlKey: string = control.key;
-    const controlSuffixNumber: number = parseInt(controlKey.match(/\d+/)[0], 10); // Parseamos identificador de control de entrada y obtenemos su parte numerica
     console.log('Eliminar dupla de controles: ' + controlKey);
-    this.elems_form.removeControl(control.key);
+    this.validation_form.removeControl(controlKey);
   }
   /**
    * @description Función encargada de implementar las llamadas adecuadas a la base de datos en función de los campos del formulario
    * @param values Valores introducidos en el formulario en formato json. PE: {username: "JmacArrow", name: "Javier", lastname: "M" ...
    */
-  onSubmit(tableNameValue, elemsFormValue) {
-    console.log('TableNameValues: ' + tableNameValue);
-    console.log('ElemsFormValue: ' + elemsFormValue);
+  onSubmit(tableNameValue) {
+    console.log('onSubmit: Nombre tabla: ' + tableNameValue.tableName);
+
+    /* Creamos tabla en DB */
     this.db.createTable(tableNameValue.tableName);
+
+    /* Iteramos sobre el array/object de valores devueltos desde el formulario obteniendo sus propiedades de objeto con for-in
+    *  y añadimos dichos valores a la tabla en DB.
+    */
+    for (const prop in tableNameValue) {
+      if (prop !== 'tableName') {
+        console.log('onSubmit: Elemento en español añadido: ' + tableNameValue[prop].spanishName);
+        console.log('onSubmit: Elemento en inglés añadido: ' + tableNameValue[prop].englishName);
+        this.db.addTableElement(tableNameValue.tableName, tableNameValue[prop].spanishName, tableNameValue[prop].englishName);
+      }
+    }
+
     this.closeModal(); // Para finalizar, cerramos el modal
   }
 

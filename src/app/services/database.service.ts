@@ -94,7 +94,10 @@ export class DatabaseService {
   /**
    * 07/08/2019 - First version
    * SEJMM DS007
-   * @description: Añade un elemento con @param spanishName y @param englishName a la tabla @param tableName
+   * @description: Añade un elemento a la tabla.
+   * @param tableName Tabla a la que se añadirá el elemento
+   * @param spanishName Nombre elemento en español
+   * @param englishName Nombre elemento en inglés
    */
   addTableElement(tableName: string, spanishName: string, englishName: string) {
     const data = [spanishName, englishName];
