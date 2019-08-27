@@ -1,8 +1,16 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-button size="small" shape="round" (click)="closeModal()" color="tertiary">
+      <ion-button size="small" shape="round" (click)="closeModal()" color="tertiary" strong="true">
         <ion-icon slot="start" name="close"></ion-icon> Cerrar
+      </ion-button>
+    </ion-buttons>
+
+    <!-- Submit button del formulario, solo disponible en caso de no haber ningún error -->
+    <ion-buttons slot="end">
+      <ion-button strong size="small" type="submit" shape="round" color="tertiary" strong="true"
+        [disabled]="!validation_form.valid">
+        Enviar <ion-icon slot="end" name="checkmark-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -37,34 +45,37 @@
             </div>
           </ion-item>
           <div class="validation-errors">
-              <ng-container *ngFor="let validation of validation_messages.duplaControlMessages">
-                <div class="error-message"
-                  *ngIf="validation_form.get('tableName').hasError(validation.type) && (validation_form.get('tableName').dirty || validation_form.get('tableName').touched)">
-                  <ion-icon name="information-circle-outline"></ion-icon> {{ validation.message }}
-                </div>
-              </ng-container>
-            </div>
+            <ng-container *ngFor="let validation of validation_messages.duplaControlMessages">
+              <div class="error-message"
+                *ngIf="validation_form.get(control.key + '.spanishName').hasError(validation.type) && (validation_form.get(control.key + '.spanishName').dirty || 
+                validation_form.get(control.key + '.spanishName').touched)">
+                <ion-icon name="information-circle-outline"></ion-icon> {{ validation.message }}
+              </div>
+            </ng-container>
+          </div>
         </ion-col>
 
         <ion-col *ngIf="control.key != 'tableName'" size="5">
-
+        
           <ion-item>
             <div formGroupName="{{control.key}}">
               <ion-input type="text" formControlName="englishName" placeHolder="ingles"></ion-input>
             </div>
           </ion-item>
           <div class="validation-errors">
-              <ng-container *ngFor="let validation of validation_messages.duplaControlMessages">
-                <div class="error-message"
-                  *ngIf="validation_form.get('tableName').hasError(validation.type) && (validation_form.get('tableName').dirty || validation_form.get('tableName').touched)">
-                  <ion-icon name="information-circle-outline"></ion-icon> {{ validation.message }}
-                </div>
-              </ng-container>
-            </div>
+            <ng-container *ngFor="let validation of validation_messages.duplaControlMessages">
+              <div class="error-message"
+                *ngIf="validation_form.get(control.key + '.englishName').hasError(validation.type) && (validation_form.get(control.key + '.englishName').dirty || 
+                validation_form.get(control.key + '.englishName').touched)">
+                <ion-icon name="information-circle-outline"></ion-icon> {{ validation.message }}
+              </div>
+            </ng-container>
+          </div>
         </ion-col>
 
         <ion-col *ngIf="control.key != 'tableName'" size="2">
-          <ion-fab-button color="light" size="small" (click)="removeControl(control)" [disabled]="!validation_form.valid">
+          <ion-fab-button color="light" size="small" (click)="removeControl(control)"
+            [disabled]="!validation_form.valid">
             <ion-icon name="close-circle"></ion-icon>
           </ion-fab-button>
         </ion-col>
@@ -73,16 +84,11 @@
     </ion-grid>
 
     <!-- Botón para añadir dupla de elementos a modo de formControls -->
-    <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-      <ion-fab-button color="danger" (click)="addControl()">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-
-    <!-- Submit button del formulario, solo disponible en caso de no haber ningún error -->
-    <ion-button color="primary" type="submit" class="submit-btn" expand="full" [disabled]="!validation_form.valid">
-      Enviar
+    <ion-button expand="block" shape="round" color="danger" (click)="addControl()">
+      Añadir pareja
+      <ion-icon slot="end" name="add-circle"></ion-icon>
     </ion-button>
+
   </form>
 
 </ion-content>

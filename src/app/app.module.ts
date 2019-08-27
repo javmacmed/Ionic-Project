@@ -10,11 +10,11 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-/* SEJMM INI DS0002; SQLite Database */
+/* SEJMM INI DS002; SQLite Database */
 import { SQLite } from '@ionic-native/sqlite/ngx';
 import { SQLitePorter } from '@ionic-native/sqlite-porter/ngx';
-/* SEJMM FIN DS0002; SQLite Database */
-
+/* SEJMM FIN DS002; SQLite Database */
+import { Keyboard } from '@ionic-native/keyboard/ngx'; /* SEJMM DS010; Ionic KeyBoard */
 // Modal Pages
 import { ImagePageModule } from './pages/modal/image/image.module';
 import { SearchFilterPageModule } from './pages/modal/search-filter/search-filter.module';
@@ -41,8 +41,9 @@ import { NotificationsComponent } from './components/notifications/notifications
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     /* SEJMM INI DS0002 */
     SQLite,
-    SQLitePorter
+    SQLitePorter,
     /* SEJMM FIN DS0002 */
+    Keyboard /*SEJMM DS010 */
   ],
   bootstrap: [AppComponent]
 })

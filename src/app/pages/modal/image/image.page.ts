@@ -4,6 +4,7 @@ import { NavController, ModalController, NumericValueAccessor } from '@ionic/ang
 // import { DomSanitizer } from '@angular/platform-browser';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/services/database.service';
+import { Keyboard } from '@ionic-native/keyboard/ngx'; /* SEJMM DS010; Ionic KeyBoard */
 
 @Component({
   selector: 'app-image',
@@ -38,7 +39,8 @@ export class ImagePage implements OnInit {
     private modalCtrl: ModalController,
     // private sanitizer: DomSanitizer,
     public formBuilder: FormBuilder,
-    private db: DatabaseService
+    private db: DatabaseService,
+    public keyboard: Keyboard /* SEJMM DS010; Definimos como pública para poder acceder a ella desde el HTML */
   ) { }
 
   ngOnInit() {
