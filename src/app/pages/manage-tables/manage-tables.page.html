@@ -25,7 +25,7 @@
     <ion-row *ngFor="let table of tablesArrayName">
       <ion-col>
         <ion-list class="bg-list">
-          <ion-button expand="block" (click)="presentImage(themeCover)">
+          <ion-button expand="block" (click)="presentFormModModal(table)">
             {{ table }}
           </ion-button>
         </ion-list>
@@ -33,7 +33,7 @@
 
       <ion-col size="2">
         <ion-list class="bg-list">
-          <ion-button color="dark" (click)="deleteTable(table)" strong>
+          <ion-button color="dark" (click)="presentAlertConfirmDeletion(table)" strong>
             <ion-icon size="small" name="trash"></ion-icon>
           </ion-button>
         </ion-list>
@@ -42,7 +42,7 @@
   </ion-grid>
 
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-      <ion-fab-button color="danger" (click)="presentImage(table)">
+      <ion-fab-button color="danger" (click)="presentFormCreationModal()">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
   </ion-fab>

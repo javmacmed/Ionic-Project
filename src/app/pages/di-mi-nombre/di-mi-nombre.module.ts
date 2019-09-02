@@ -5,7 +5,8 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { UnePalabrasPage } from './une-palabras.page';
+import { DiMiNombrePage } from './di-mi-nombre.page';
+import { NgArrayPipesModule } from 'ngx-pipes';
 
 // SEJMM DS0003.3 Import Pipes; Dentro está la Tuberia para reordenar aleatoriamente un array desde el template "| alterOrder".
 // import { AlterOrderPipe } from '../../alter.order.pipe';
@@ -14,7 +15,7 @@ import { PipesModule } from '../../pipes/pipes.module';
 const routes: Routes = [
   {
     path: '',
-    component: UnePalabrasPage
+    component: DiMiNombrePage
   }
 ];
 
@@ -24,8 +25,9 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    PipesModule // SEJMM DS0003.3 Import Pipes
+    PipesModule, // SEJMM DS0003.3 Import Pipes
+    NgArrayPipesModule
   ],
-  declarations: [UnePalabrasPage] // , AlterOrderPipe] // SEJMM DS0003.3 Declaracion de clase AlterOrderPipe.
+  declarations: [DiMiNombrePage] // , AlterOrderPipe] // SEJMM DS0003.3 Declaracion de clase AlterOrderPipe.
 })
-export class UnePalabrasPageModule {}
+export class DiMiNombrePageModule {}

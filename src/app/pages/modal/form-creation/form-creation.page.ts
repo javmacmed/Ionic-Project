@@ -1,17 +1,17 @@
 /* SEJMM DS009; Creación y gestión de formulario */
 import { Component, Input, OnInit } from '@angular/core';
-import { NavController, ModalController, NumericValueAccessor } from '@ionic/angular';
+import { NavController, ModalController } from '@ionic/angular';
 // import { DomSanitizer } from '@angular/platform-browser';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/services/database.service';
 import { Keyboard } from '@ionic-native/keyboard/ngx'; /* SEJMM DS010; Ionic KeyBoard */
 
 @Component({
-  selector: 'app-image',
-  templateUrl: './image.page.html',
-  styleUrls: ['./image.page.scss'],
+  selector: 'app-form-creation',
+  templateUrl: './form-creation.page.html',
+  styleUrls: ['./form-creation.page.scss'],
 })
-export class ImagePage implements OnInit {
+export class FormCreationPage implements OnInit {
   @Input() value: any; // Util para pasar un parametro. P.E: Nombre de tabla ya creada
 
   validation_form: FormGroup; // Declaración del grupo de control de formulario
@@ -44,29 +44,33 @@ export class ImagePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    // this.image = this.sanitizer.bypassSecurityTrustStyle(this.value);
+    // this.form-creation = this.sanitizer.bypassSecurityTrustStyle(this.value);
     this.validation_form = this.formBuilder.group({
       tableName: new FormControl('', Validators.compose([
         Validators.maxLength(20),
         Validators.minLength(3),
         // Validators.pattern('^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$'),
-        Validators.pattern('[a-zA-Z ]*'), // Se admitiran nombres de tabla que solo tengan letras y espacios
+        Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]*'), // Se admitiran nombres de tabla que solo tengan letras y espacios
         Validators.required
       ]))
     });
 
   }
 
+  /**
+   * @description Cierra el modal
+   */
   closeModal() {
     this.modalCtrl.dismiss('¡Tabla creada!');
   }
+
   /**
    * @description Incrementa el número de elementos de control y añade su dupla en español y en inglés.
    */
   addControl() {
     this.validation_form.addControl('par' + (this.duplaCount + 1), new FormGroup({
-      spanishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])),
-      englishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required]))
+      spanishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]*'), Validators.required])),
+      englishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]*'), Validators.required]))
     }));
     console.log('Contador duplas: ' + this.duplaCount);
 
@@ -76,6 +80,7 @@ export class ImagePage implements OnInit {
   }
   /**
    * @description Elimina dupla de elementos de control español y en inglés.
+   * @param control Control a eliminar
    */
   removeControl(control) {
     const controlKey: string = control.key;

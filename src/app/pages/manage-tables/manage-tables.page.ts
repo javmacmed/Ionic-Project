@@ -9,7 +9,10 @@ import {
   NavController,
   ModalController } from '@ionic/angular';
 // Modals
-import {ImagePage } from './../modal/image/image.page';
+import { FormCreationPage } from './../modal/form-creation/form-creation.page';
+import { FormModPage } from './../modal/form-mod/form-mod.page'; // DS009.1: Implementación de formulario para modificación de tablas
+// Components
+import { AlertController } from '@ionic/angular'; // SEJMM DS009.3: Alert mostrado para confirmar borrado de tabla y elemento de tabla.
 
 @Component({
   selector: 'app-manage-tables',
@@ -23,7 +26,8 @@ export class ManageTablesPage implements OnInit {
 
   constructor(private db: DatabaseService, // DS002: Base de datos SQLite
     public navCtrl: NavController, // SEJMM DS007: Preparación multitabla
-    public modalCtrl: ModalController // SEJMM DS009; Modal que usaremos como formulario para modificar las tablas
+    public modalCtrl: ModalController, // SEJMM DS009; Modal que usaremos como formulario para modificar las tablas
+    public alertController: AlertController // SEJMM DS009.3: Alert mostrado para confirmar borrado de tabla y elemento de tabla.
   ) { }
 
   ngOnInit() {
@@ -43,20 +47,67 @@ export class ManageTablesPage implements OnInit {
   }
 
   /**
-   * @description: Presenta la pagina a modo de ion-modal de la clase "ImagePage"
-   * @param image: Imagen a presentar en el modal
+   * @description: Presenta la pagina a modo de ion-modal de la clase "FormCreationPage"
    */
-  async presentImage(image: any) {
+  async presentFormCreationModal() {
     const modal = await this.modalCtrl.create({
-      component: ImagePage,
-      componentProps: { value: image },
+      component: FormCreationPage,
+      mode: 'ios'
+    });
+    return await modal.present();
+  }
+  /**
+   * @description: Presenta la pagina a modo de ion-modal de la clase "FormModPage"
+   * @param table: Tabla a presentar en el modal
+   */
+  async presentFormModModal(table: string) {
+    const modal = await this.modalCtrl.create({
+      component: FormModPage,
+      componentProps: { 'tableNameInput': table },
       mode: 'ios'
     });
     return await modal.present();
   }
 
+  /**
+   * SEJMM DS009.3: Alert mostrado para confirmar borrado de tabla y elemento de tabla.
+   * @description: Presenta el alert para confirmación de borrado
+   * @param table: Tabla a presentar en el modal
+   */
+  async presentAlertConfirmDeletion(tableName: string) {
+    const tableNameUpperCase: string = tableName.toUpperCase();
+    const alert = await this.alertController.create({
+      header: 'Borrar Tabla ' + tableNameUpperCase,
+      message: '¿Está seguro de que desea <strong>eliminar la tabla definitivamente</strong>?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Aceptar',
+          handler: () => {
+            console.log('Borrado confirmado');
+            this.db.deleteTable(tableName);
+          }
+        }
+      ],
+      mode: 'ios'
+    });
+
+    await alert.present();
+  }
+
+
+  /**
+   * @description Presenta alert para confirmar borrado de una tabla de DB.
+   * @param tableName Tabla para borrar de DB.
+   */
   deleteTable(tableName: string) {
-    this.db.deleteTable(tableName);
+    this.presentAlertConfirmDeletion(tableName);
   }
 
 }

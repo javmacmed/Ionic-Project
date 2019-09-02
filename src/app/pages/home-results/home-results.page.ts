@@ -9,7 +9,7 @@ import {
 
 // Modals
 import { SearchFilterPage } from '../../pages/modal/search-filter/search-filter.page';
-import { ImagePage } from './../modal/image/image.page';
+import { FormCreationPage } from './../modal/form-creation/form-creation.page';
 // Call notifications test by Popover and Custom Component.
 import { NotificationsComponent } from './../../components/notifications/notifications.component';
 
@@ -90,7 +90,7 @@ export class HomeResultsPage {
 
   async presentImage(image: any) {
     const modal = await this.modalCtrl.create({
-      component: ImagePage,
+      component: FormCreationPage,
       componentProps: { value: image }
     });
     return await modal.present();

@@ -1,0 +1,22 @@
+:host {
+    ion-content {
+      --background: linear-gradient(-135deg, var(--ion-color-medium), var(--ion-color-light))
+    }
+  }
+  
+  .submit-btn {
+    margin-top: 40px;
+  }
+  
+  .error-message
+  {
+    color: red;
+    font-size: 14px;
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+  
+  .bg-list {
+    background: transparent; // SEJMM Color fondo lista en UnePalabras (Todas las fases)
+    padding: 0%;
+  }

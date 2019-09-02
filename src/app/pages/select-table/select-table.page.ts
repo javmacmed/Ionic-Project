@@ -5,8 +5,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService, Elem } from './../../services/database.service'; // Importamos clases DB
-import {
-  NavController} from '@ionic/angular'; // SEJMM DS007: Preparación multitabla
+import { NavController} from '@ionic/angular'; // SEJMM DS007: Preparación multitabla
 
 @Component({
   selector: 'app-select-table',
@@ -37,8 +36,7 @@ export class SelectTablePage implements OnInit {
     });
   }
 
-  goToUnePalabras(tableName: string) {
-    this.navCtrl.navigateForward(['/une-palabras', tableName]);
+  goToSelectGame(tableName: string) {
+    this.navCtrl.navigateForward(['/select-game', tableName]);
   }
-
 }

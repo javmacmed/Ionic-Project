@@ -4,15 +4,19 @@
       <ion-back-button defaultHref="home-results"></ion-back-button>
     </ion-buttons>
     <ion-title>
-      <ion-text color="light" class="fw700">Elige Temática</ion-text>
+      <ion-text color="light" class="fw700">Elige Juego</ion-text>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
   <ion-list class="bg-list">
-    <ion-button expand="block" *ngFor="let table of tablesArrayName" (click)="goToSelectGame(table)">
-      {{ table }}
+    <ion-button expand="block" (click)="goToUnePalabras()">
+      Une Palabras
+      <ion-icon slot="end" name="shuffle"></ion-icon>
+    </ion-button>
+    <ion-button expand="block" (click)="goToDiMiNombre()">
+      Di Mi Nombre
     </ion-button>
   </ion-list>
 </ion-content>

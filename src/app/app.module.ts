@@ -16,25 +16,26 @@ import { SQLitePorter } from '@ionic-native/sqlite-porter/ngx';
 /* SEJMM FIN DS002; SQLite Database */
 import { Keyboard } from '@ionic-native/keyboard/ngx'; /* SEJMM DS010; Ionic KeyBoard */
 // Modal Pages
-import { ImagePageModule } from './pages/modal/image/image.module';
+import { FormCreationPageModule } from './pages/modal/form-creation/form-creation.module';
+import { FormModPageModule } from './pages/modal/form-mod/form-mod.module'; // DS009.1: Implementación de formulario para modificación de tablas
 import { SearchFilterPageModule } from './pages/modal/search-filter/search-filter.module';
 
 // Components
 import { NotificationsComponent } from './components/notifications/notifications.component';
 
-
 @NgModule({
-  declarations: [AppComponent, NotificationsComponent],
+  declarations: [AppComponent, NotificationsComponent], // SEJMM; Declaramos componentes
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
-    ImagePageModule,
+    FormCreationPageModule,
+    FormModPageModule, // DS009.1: Implementación de formulario para modificación de tablas
     SearchFilterPageModule
   ],
-  entryComponents: [NotificationsComponent],
+  entryComponents: [NotificationsComponent], // SEJMM; Para carga dinamica en la View (Vista)
   providers: [
     StatusBar,
     SplashScreen,

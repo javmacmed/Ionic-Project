@@ -8,8 +8,8 @@
 
     <!-- Submit button del formulario, solo disponible en caso de no haber ningún error -->
     <ion-buttons slot="end">
-      <ion-button strong size="small" type="submit" shape="round" color="tertiary" strong="true"
-        [disabled]="!validation_form.valid">
+      <ion-button strong size="small" shape="round" color="tertiary" strong="true"
+        [disabled]="!validation_form.valid" (click)="onSubmit(validation_form.value)">
         Enviar <ion-icon slot="end" name="checkmark-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -17,7 +17,7 @@
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="validation_form" (submit)="onSubmit(validation_form.value)">
+  <form [formGroup]="validation_form">
 
     <!-- Nombre tabla -->
     <ion-item>

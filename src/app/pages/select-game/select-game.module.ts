@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // SEJMM DS009; Necesario para el control de formularios
 
-import { ImagePage } from './image.page';
+import { IonicModule } from '@ionic/angular';
+
+import { SelectGamePage } from './select-game.page';
+
 const routes: Routes = [
   {
     path: '',
-    component: ImagePage
+    component: SelectGamePage
   }
 ];
 
@@ -16,11 +18,9 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ImagePage],
-  entryComponents: [ImagePage]
+  declarations: [SelectGamePage]
 })
-export class ImagePageModule {}
+export class SelectGamePageModule {}

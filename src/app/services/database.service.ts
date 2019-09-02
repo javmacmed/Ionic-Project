@@ -22,8 +22,9 @@ export class DatabaseService {
   private database: SQLiteObject;
   private dbReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  selectedTable = new BehaviorSubject([]); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
-  tablesArrayName = new BehaviorSubject([]); // SEJMM DS007; Preparamos para multitabla.
+  selectedTable = new BehaviorSubject<Elem[]>(null); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
+  selectedTableForGame = new BehaviorSubject<Elem[]>(null); // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+  tablesArrayName = new BehaviorSubject<string[]>([]); // SEJMM DS007; Preparamos para multitabla.
 
   constructor(private plt: Platform, private sqlitePorter: SQLitePorter, private sqlite: SQLite, private http: HttpClient) {
     this.plt.ready().then(() => {
@@ -67,7 +68,39 @@ export class DatabaseService {
     return this.selectedTable.asObservable();
   }
 
+   /**
+   * SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+   */
+  getSelectedTableForGame(): Observable<Elem[]> {
+    return this.selectedTableForGame.asObservable();
+  }
+
   /**** SEJMM INI DS007; Preparar base de datos para las multiples tablas creadas mediante "Crea tu tabla" ****/
+  /**
+   * 28/08/2019 - First version
+   * SEJMM DS007
+   * @description: Carga lista de elementos aplicando un limite de elementos
+   * @param tableName Nombre tabla a cargar
+   * @param limit Limite de elementos a cargar
+   */
+  loadTableForGame(tableName: string, limit: number) {
+    let query = 'SELECT * FROM ';
+    query = query.concat(tableName + ' LIMIT ' + limit); // DS003.3.1: UPDATE REORDER CON LIMITE
+    return this.database.executeSql(query, []).then(data => {
+      const table: Elem[] = [];
+      if (data.rows.length > 0) {
+        for (let i = 0; i < data.rows.length; i++) {
+          table.push({
+            id: data.rows.item(i).id,
+            spanishName: data.rows.item(i).spanishName,
+            englishName: data.rows.item(i).englishName
+          });
+        }
+      }
+      this.selectedTableForGame.next(table);
+    });
+  }
+
   /**
    * 07/08/2019 - First version
    * SEJMM DS007
@@ -75,6 +108,7 @@ export class DatabaseService {
    * @param tableName
    */
   loadTable(tableName: string) {
+    // this.selectedTable = new BehaviorSubject([]); // SEJMM DS009.1; Fix Reinicialización de this.selectedTable para evitar dos tablas en una
     let query = 'SELECT * FROM ';
     query = query.concat(tableName);
     return this.database.executeSql(query, []).then(data => {
@@ -131,7 +165,8 @@ export class DatabaseService {
    * @param tableSelected: Nombre de la tabla desde la cual queremos borrar el elemento
    */
   deleteTableElement(id: number, tableSelected: string) {
-    return this.database.executeSql('DELETE FROM ? WHERE id = ?', [tableSelected, id]).then(_ => {
+    const query = 'DELETE FROM ' + tableSelected + ' WHERE id = ' + id;
+    return this.database.executeSql(query, []).then(_ => {
       this.loadTable(tableSelected);
     });
   }
@@ -144,8 +179,10 @@ export class DatabaseService {
    * @param tablaSelected
    */
   updateTableElement(elemento: Elem, tablaSelected: string) {
-    const data = [elemento.spanishName, elemento.englishName];
-    return this.database.executeSql(`UPDATE ${tablaSelected} SET spanishName = ?, englishName = ? WHERE id = ${elemento.id}`, data).then(data => {
+    const query = `UPDATE ` + tablaSelected + ` SET spanishName = '` + elemento.spanishName + `', englishName = '` + elemento.englishName + `' WHERE id = ` + elemento.id;
+
+    // const data = [elemento.spanishName, elemento.englishName];
+    return this.database.executeSql(query, []).then(_ => {
       this.loadTable(tablaSelected);
     });
   }
@@ -175,6 +212,20 @@ export class DatabaseService {
       this.loadTables();
     });
   }
+
+   /**
+   * 29/08/2019 - First version
+   * SEJMM DS009.1
+   * @description: Actualiza el nombre de una tabla pasada como parametro.
+   */
+  updateTableName(tableName: string, newTableName: string) {
+    let query = 'ALTER TABLE ';
+    query = query.concat(tableName + ' RENAME TO ' + newTableName);
+    return this.database.executeSql(query, []).then(data => {
+      this.loadTables();
+    });
+  }
+
 
   /**
    * 11/08/2019 - First version
