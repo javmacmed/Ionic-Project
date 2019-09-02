@@ -13,21 +13,32 @@
   <ion-slides #wordSlider pager="true">
 
     <ion-slide *ngFor="let tableElement of tableArrayElements | alterOrder">
-      <ion-row center>
-        <ion-col text-center>
+      <ion-grid padding>
+        <ion-row justify-content-center>
+          <ion-col>
 
-          <ion-text color="light">
-            <h1><strong>{{tableElement.spanishName}}</strong></h1>
-          </ion-text>
-
-          <ion-button size="large" strong=true *ngFor="let letter of tableElement.englishName | spell | shuffle">
             <ion-text color="light">
-             {{ letter }}
+              <h1><strong>{{tableElement.spanishName}}</strong></h1>
             </ion-text>
-          </ion-button>
-        </ion-col>
-      </ion-row>
 
+            <ion-button size="large" strong=true *ngFor="let letter of tableElement.englishName | spell | shuffle">
+              <ion-text color="light">
+                {{ letter }}
+              </ion-text>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+        <ion-row justify-content-center>
+          <ion-col *ngFor="let letter of tableElement.englishName | spell">
+            <ion-item lines="full">
+              <ion-label color="light">
+                  {{ letter }}
+              </ion-label>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
       <!-- <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
               <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
               <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" /></svg> -->

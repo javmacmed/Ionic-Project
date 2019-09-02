@@ -2,10 +2,18 @@ ion-content {
     --background: linear-gradient(-135deg, var(--ion-color-secondary), var(--ion-color-dark)); // SEJMM Color fondo pantalla UnePalabras (Todas las fases)
 }
 
+ion-slides {
+  height: 100%; // 100vh(100% altura del viewPort)
+}
+
+ion-grid {
+  --ion-grid-width: 100%;
+}
 .bg-list{
     background: transparent; // SEJMM Color fondo lista en UnePalabras (Todas las fases)
     padding: 0%;
 }
+
 
 /** ANIMATION CHECKMARK **/
 
