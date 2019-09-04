@@ -10,8 +10,8 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-list class="bg-list">
-    <ion-button expand="block" *ngFor="let table of tablesArrayName" (click)="goToSelectGame(table)">
+  <ion-list class="bg-list" inset=true>
+    <ion-button margin shape="round" expand="full" *ngFor="let table of tablesArrayName" (click)="goToSelectGame(table)">
       {{ table }}
     </ion-button>
   </ion-list>

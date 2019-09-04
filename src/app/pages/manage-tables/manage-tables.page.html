@@ -12,31 +12,18 @@
 
 <ion-content padding>
 
-  <!-- <ion-row center>
-    <ion-col text-center>
-      <ion-button shape="round" color="dark" (click)="presentImage(themeCover)" strong>
-        <ion-icon slot="end" name="add-circle-outline"> </ion-icon>
-        Añadir
-      </ion-button>
-    </ion-col>
-  </ion-row> -->
-
   <ion-grid>
-    <ion-row *ngFor="let table of tablesArrayName">
+    <ion-row *ngFor="let table of tablesArrayName" justify-content-center>
       <ion-col>
-        <ion-list class="bg-list">
-          <ion-button expand="block" (click)="presentFormModModal(table)">
+          <ion-button class="manage-table-button" expand="block" (click)="presentFormModModal(table)">
             {{ table }}
           </ion-button>
-        </ion-list>
       </ion-col>
 
       <ion-col size="2">
-        <ion-list class="bg-list">
-          <ion-button color="dark" (click)="presentAlertConfirmDeletion(table)" strong>
-            <ion-icon size="small" name="trash"></ion-icon>
+          <ion-button expand="block" color="dark" (click)="presentAlertConfirmDeletion(table)">
+            <ion-icon name="trash"></ion-icon>
           </ion-button>
-        </ion-list>
       </ion-col>
     </ion-row>
   </ion-grid>

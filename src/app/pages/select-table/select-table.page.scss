@@ -2,6 +2,11 @@ ion-content {
     --background: linear-gradient(-135deg, var(--ion-color-secondary), var(--ion-color-dark)); // SEJMM Color fondo pantalla UnePalabras (Todas las fases)
 }
 
+ion-button {
+    height: 45px;
+    font-size: 20px;
+}
+
 .bg-list{
     background: transparent; // SEJMM Color fondo lista en UnePalabras (Todas las fases)
     padding: 0%;

@@ -13,11 +13,11 @@
   <ion-slides #wordSlider pager="true">
 
     <ion-slide *ngFor="let tableElement of tableArrayElements | alterOrder">
-      <ion-grid padding>
+      <ion-grid no-padding>
         <ion-row justify-content-center>
           <ion-col>
 
-            <ion-text color="light">
+            <ion-text margin-bottom color="light">
               <h1><strong>{{tableElement.spanishName}}</strong></h1>
             </ion-text>
 
@@ -29,13 +29,15 @@
           </ion-col>
         </ion-row>
 
+        <ion-row style="height: 25%"></ion-row> <!-- Espacio  -->
+
         <ion-row justify-content-center>
           <ion-col *ngFor="let letter of tableElement.englishName | spell">
-            <ion-item lines="full">
+            <div style="height: 30px; width: 30px; border-bottom: 2px var(--ion-color-light) solid; text-align: center">
               <ion-label color="light">
                   {{ letter }}
               </ion-label>
-            </ion-item>
+            </div>
           </ion-col>
         </ion-row>
       </ion-grid>

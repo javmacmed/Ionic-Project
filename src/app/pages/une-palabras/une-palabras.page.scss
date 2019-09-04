@@ -15,22 +15,22 @@
 // }
 //////////
 .sib{
-    background: var(--ion-color-success);
+    background: var(--ion-color-success) !important;
     border-radius: 4px 4px 4px 4px;
     color: white;
 }
 .nob{
-    background: #933 !important; 
+    background: var(--ion-color-danger) !important; 
     border-radius: 4px 4px 4px 4px;
     color: white;
 }
 .eligiendob{
-    background: yellow !important;
+    background: var(--ion-color-warning) !important;
     border-radius: 4px 4px 4px 4px;
     color: black;
 }
 .defaultb{
-    background: white !important;
+    background: var(--ion-color-light) !important;
     border-radius: 4px 4px 4px 4px;
     color:black;
 }

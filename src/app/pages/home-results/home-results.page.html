@@ -4,9 +4,9 @@
       <ion-menu-button color="secondary"></ion-menu-button>
     </ion-buttons>
     <ion-title>
-        <ion-text color="light">
-          <ion-text color="light" class="fw700">Say My Name</ion-text>
-        </ion-text>
+      <ion-text color="light">
+        <ion-text color="light" class="fw700">Say My Name</ion-text>
+      </ion-text>
     </ion-title>
     <!-- SEJMM COMENTADO BARRA BUSQUEDA PLANTILLA
     <ion-buttons slot="end">
@@ -61,24 +61,23 @@
   </ion-button> -->
 
 
-    <ion-img [src]="themeCover"></ion-img>
-    
-    <!-- <ion-row style="height: 25px"></ion-row>     Espacio  -->
-    <ion-row style="height: 8%"></ion-row>     <!-- Espacio  -->
- 
+  <ion-img [src]="themeCover"></ion-img>
 
-    <ion-button margin strong fill="outline" shape="round" expand="full" color="secondary" (click)="goToSelectTable()" slots="icon-only">
-      JUGAR  
-    </ion-button>
+  <!-- <ion-row style="height: 25px"></ion-row>     Espacio  -->
+  <ion-row style="height: 8%"></ion-row> <!-- Espacio  -->
 
-    <ion-button margin strong fill="outline" shape="round" expand="full" color="secondary" (click)="goToManageTables()">
-      CREA TU TABLA
-    </ion-button>
 
-    <ion-button margin strong fill="outline" shape="round" expand="full" color="secondary">
-      <ion-ripple-effect></ion-ripple-effect>
-      RESULTADOS
-    </ion-button>
+  <ion-button margin strong fill="outline" shape="round" expand="full" color="secondary" (click)="goToSelectTable()">
+    JUGAR
+  </ion-button>
+
+  <ion-button margin strong fill="outline" shape="round" expand="full" color="secondary" (click)="goToManageTables()">
+    CREA TU TABLA
+  </ion-button>
+
+  <ion-button margin strong fill="outline" shape="round" expand="full" color="secondary">
+    <ion-ripple-effect></ion-ripple-effect>
+    RESULTADOS
+  </ion-button>
   <!-- <popmenu></popmenu>  Popmenu con mismas opciones que barra lateral comentado DS001 -->
 </ion-content>
-  

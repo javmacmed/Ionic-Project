@@ -1,16 +1,25 @@
 :host {
-    ion-content {
-        --background: linear-gradient(-135deg, var(--ion-color-secondary), var(--ion-color-dark)); //SEJMM Cambio fondo pantalla principal
-    }
+  ion-content {
+    --background: linear-gradient(
+      -135deg,
+      var(--ion-color-secondary),
+      var(--ion-color-dark)
+    ); //SEJMM Cambio fondo pantalla principal
+  }
 
-    ion-item {
-        border-radius: 0;
-        border-bottom: 1px dotted var(--ion-color-medium);
-    }
+  ion-item {
+    border-radius: 0;
+    border-bottom: 1px dotted var(--ion-color-medium);
+  }
 
-    ion-card {
-        &.no-radius {
-            border-radius: 0;
-        }
+  ion-card {
+    &.no-radius {
+      border-radius: 0;
     }
+  }
+
+  ion-button {
+    height: 50px;
+    font-size: 20px;
+  }
 }

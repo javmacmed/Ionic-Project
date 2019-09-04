@@ -10,13 +10,14 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-list class="bg-list">
-    <ion-button expand="block" (click)="goToUnePalabras()">
+  <ion-list class="bg-list" inset=true>
+    <ion-button margin shape="round" expand="full" (click)="goToUnePalabras()">
       Une Palabras
-      <ion-icon slot="end" name="shuffle"></ion-icon>
+      <ion-icon slot="end" src="../../../assets/img/flecha-derecha.svg"></ion-icon>
     </ion-button>
-    <ion-button expand="block" (click)="goToDiMiNombre()">
+    <ion-button margin shape="round" expand="full" (click)="goToDiMiNombre()">
       Di Mi Nombre
+      <ion-icon slot="end" src="../../../assets/img/rompecabezas.svg"></ion-icon>
     </ion-button>
   </ion-list>
 </ion-content>
