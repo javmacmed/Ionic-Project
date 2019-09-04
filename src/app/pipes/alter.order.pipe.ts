@@ -4,10 +4,11 @@
  * */
 
 import { Pipe, PipeTransform } from '@angular/core';
+import { Elem } from './../services/database.service'; // Importamos clases DB
 
 @Pipe({name: 'alterOrder'})
 export class AlterOrderPipe implements PipeTransform {
-    transform(arrayToOrder: Array<string>, args: string[]): any {
+    transform(arrayToOrder: Array<Elem>, args: string[]): any {
         const alterOrderedArray = [];
         for (const elem in arrayToOrder) {
             if (elem !== null && elem !== undefined) {

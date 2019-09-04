@@ -7,13 +7,16 @@ ion-slides {
   --bullet-background: var(--ion-color-light);
   --bullet-background-active: var(--ion-color-secondary);
 }
+.mydiv {
+  margin: auto;
+  height: 30px;
+  width: 30px; 
+  border-bottom: 2px var(--ion-color-dark-contrast) solid; 
+  text-align: center;
+}
 
 ion-grid {
   height: 100%;
-}
-.bg-list{
-    background: transparent; // SEJMM Color fondo lista en UnePalabras (Todas las fases)
-    padding: 0%;
 }
 
 

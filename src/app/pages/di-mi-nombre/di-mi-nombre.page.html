@@ -12,15 +12,20 @@
 
   <ion-slides #wordSlider pager="true">
 
-    <ion-slide *ngFor="let tableElement of tableArrayElements | alterOrder">
-      <ion-grid no-padding>
+    <ion-slide *ngFor="let tableElement of randomizedTableArrayElements">
+      <ion-grid padding-top>
         <ion-row justify-content-center>
           <ion-col>
-
-            <ion-text margin-bottom color="light">
+            <ion-text color="light">
               <h1><strong>{{tableElement.spanishName}}</strong></h1>
             </ion-text>
+          </ion-col>
+        </ion-row>
 
+        <ion-row style="height: 10%"></ion-row> <!-- Espacio  -->
+
+        <ion-row justify-content-center>
+          <ion-col>
             <ion-button size="large" strong=true *ngFor="let letter of tableElement.englishName | spell | shuffle">
               <ion-text color="light">
                 {{ letter }}
@@ -29,16 +34,25 @@
           </ion-col>
         </ion-row>
 
-        <ion-row style="height: 25%"></ion-row> <!-- Espacio  -->
+        <ion-row style="height: 15%"></ion-row> <!-- Espacio  -->
 
-        <ion-row justify-content-center>
-          <ion-col *ngFor="let letter of tableElement.englishName | spell">
-            <div style="height: 30px; width: 30px; border-bottom: 2px var(--ion-color-light) solid; text-align: center">
+        <ion-row margin-bottom justify-content-center>
+          <ion-col *ngFor="let letter of inputLettersArray">
+            <div class="mydiv">
               <ion-label color="light">
-                  {{ letter }}
+                {{ letter }}
               </ion-label>
             </div>
           </ion-col>
+        </ion-row>
+
+        <ion-row style="margin-top: 10%;margin-bottom: 10%" justify-content-center>
+          <ion-button fill="outline" (click)="deleteLetter()">
+            <ion-icon slot="icon-only" name="backspace"></ion-icon>
+          </ion-button>
+          <ion-button fill="outline" (click)="isfinishSlide()">
+            <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
+          </ion-button>
         </ion-row>
       </ion-grid>
       <!-- <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
