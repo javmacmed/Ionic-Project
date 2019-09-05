@@ -22,8 +22,8 @@ export class DatabaseService {
   private database: SQLiteObject;
   private dbReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  selectedTable = new BehaviorSubject<Elem[]>(null); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
-  selectedTableForGame = new BehaviorSubject<Elem[]>(null); // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+  selectedTable = new BehaviorSubject<Elem[]>([]); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
+  selectedTableForGame = new BehaviorSubject<Elem[]>([]); // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
   tablesArrayName = new BehaviorSubject<string[]>([]); // SEJMM DS007; Preparamos para multitabla.
 
   constructor(private plt: Platform, private sqlitePorter: SQLitePorter, private sqlite: SQLite, private http: HttpClient) {

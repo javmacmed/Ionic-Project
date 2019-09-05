@@ -10,7 +10,7 @@
 
 <ion-content>
 
-  <ion-slides #wordSlider pager="true">
+  <ion-slides #slides pager="true">
 
     <ion-slide *ngFor="let tableElement of randomizedTableArrayElements">
       <ion-grid padding-top>
@@ -26,7 +26,7 @@
 
         <ion-row justify-content-center>
           <ion-col>
-            <ion-button size="large" strong=true *ngFor="let letter of tableElement.englishName | spell | shuffle">
+            <ion-button size="large" strong=true *ngFor="let letter of tableElement.englishName | spell | shuffle" (click)="gameLogic(letter)">
               <ion-text color="light">
                 {{ letter }}
               </ion-text>
@@ -34,7 +34,7 @@
           </ion-col>
         </ion-row>
 
-        <ion-row style="height: 15%"></ion-row> <!-- Espacio  -->
+        <ion-row style="height: 20%"></ion-row> <!-- Espacio  -->
 
         <ion-row margin-bottom justify-content-center>
           <ion-col *ngFor="let letter of inputLettersArray">

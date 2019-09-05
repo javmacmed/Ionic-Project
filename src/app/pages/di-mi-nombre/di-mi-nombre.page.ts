@@ -4,7 +4,7 @@
  * */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DatabaseService, Elem } from './../../services/database.service'; // Importamos clases DB
-import { PopoverController, IonSlides} from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
+import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { ActivatedRoute } from '@angular/router';
 import { skip, take } from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
@@ -19,16 +19,17 @@ import { SpellPipe } from './../../pipes/spell.pipe';
 })
 export class DiMiNombrePage implements OnInit {
   /** Atributos de clase **/
-  @ViewChild('wordSlider') wordSlider: IonSlides;
+  @ViewChild('slides') slides;
   tableArrayElements: Elem[] = []; // DS007: Preparación multitabla
   randomizedTableArrayElements: Elem[] = []; // DS007: Preparación multitabla
   argumentos = null; // DS007: Preparación multitabla
+  activeIndex: number;
   /* Los siguientes atributos volverán a su valor por defecto al cambiar de slide (this.nextSlide) */
   letterCounter: number; // Contador de letras introducidas en el resultado del slide activo.
   elemViewedInCurrentSlide: Elem; // Elemento observado en el slide activo.
   correctLettersArray: string[] | boolean; // Array con las letras de la palabra englishName del elemViewedInCurrentSlide.
   inputLettersArray: string[]; // Array con las letras introducidas del slide activo.
-
+  slideIndex: number;
   constructor(private db: DatabaseService, // DS002: Base de datos SQLite
     public popoverCtrl: PopoverController, // DS006: Implementación de ion-popover para mostrar el final del juego
     private activeRoute: ActivatedRoute, // DS007: Preparación multitabla
@@ -37,6 +38,8 @@ export class DiMiNombrePage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.inputLettersArray = [];
+    this.letterCounter = 0;
     this.lockSwipes(true);
     this.argumentos = this.activeRoute.snapshot.paramMap.get('tableName'); // Obtenemos la tabla enviada desde select-table. DS007: Preparación multitabla
     this.db.getDatabaseState().subscribe(rdy => {
@@ -44,27 +47,40 @@ export class DiMiNombrePage implements OnInit {
         this.db.loadTableForGame(this.argumentos, 5);
         // A continuación nos suscribiremos al observable que almacena el resultado de SELECT * FROM TABLE desuscribiendonos inmediatamente despues con la pipe(take(1))
         this.db.getSelectedTableForGame()
-          .pipe(skip(1), take(1))
-          .subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
-            this.tableArrayElements = table;
-          });
+        .pipe(take(1))
+        .subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+          this.tableArrayElements = table;
+        });
       }
     });
     this.randomizedTableArrayElements = this.alterOrder.transform(this.tableArrayElements, []); // Ordenamos array aleatoriamente con pipe alterOrder desde el .ts
-    this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.wordSlider.getActiveIndex() - 1]; // Primer elemento del array ordenado aleatoriamente
+    this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.slideIndex]; // Primer elemento del array ordenado aleatoriamente
+    for (let i = 0; i < this.elemViewedInCurrentSlide.englishName.length; i++) {
+      this.inputLettersArray[i] = ' ';
+    }
     this.correctLettersArray = this.spell.transform(this.elemViewedInCurrentSlide.englishName, []);
+  }
+
+  slideChanged() {
+    this.slides.getActiveIndex().then(index => {
+      console.log('Slide: ', index);
+      this.slideIndex = index;
+    });
   }
 
   lockSwipes(lock: boolean) {
-    this.wordSlider.lockSwipes(lock);
+    this.slides.lockSwipes(lock);
   }
 
   nextSlide() {
-    this.wordSlider.slideNext();
+    this.slides.slideNext();
     this.letterCounter = 0;
-    this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.wordSlider.getActiveIndex() - 1];
+    this.slideChanged();
+    this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.slideIndex];
     this.correctLettersArray = this.spell.transform(this.elemViewedInCurrentSlide.englishName, []);
-    this.inputLettersArray = [];
+    for (let i = 0; i < this.elemViewedInCurrentSlide.englishName.length; i++) {
+      this.inputLettersArray[i] = ' ';
+    }
   }
 
   gameLogic(letter: string) {
@@ -88,9 +104,9 @@ export class DiMiNombrePage implements OnInit {
   isfinishSlide() {
     if (this.letterCounter === this.elemViewedInCurrentSlide.englishName.length &&
       this.inputLettersArray === this.correctLettersArray) {
-      // this.lockSwipes(false);
+      this.lockSwipes(false);
       this.nextSlide();
-      // this.lockSwipes(true);
+      this.lockSwipes(true);
     }
   }
 
