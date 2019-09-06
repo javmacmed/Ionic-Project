@@ -21,6 +21,7 @@ export interface Elem {
 export class DatabaseService {
   private database: SQLiteObject;
   private dbReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private tableReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   selectedTable = new BehaviorSubject<Elem[]>([]); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
   selectedTableForGame = new BehaviorSubject<Elem[]>([]); // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
@@ -60,6 +61,9 @@ export class DatabaseService {
   getDatabaseState() {
     return this.dbReady.asObservable();
   }
+  getTableState() {
+    return this.tableReady.asObservable();
+  }
 
   /**
    * SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
@@ -98,6 +102,7 @@ export class DatabaseService {
         }
       }
       this.selectedTableForGame.next(table);
+      this.tableReady.next(true);
     });
   }
 

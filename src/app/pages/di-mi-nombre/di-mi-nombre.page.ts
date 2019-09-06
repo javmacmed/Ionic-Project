@@ -7,9 +7,10 @@ import { DatabaseService, Elem } from './../../services/database.service'; // Im
 import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { ActivatedRoute } from '@angular/router';
-import { skip, take } from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+import { take } from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
 import { AlterOrderPipe } from './../../pipes/alter.order.pipe';
 import { SpellPipe } from './../../pipes/spell.pipe';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-di-mi-nombre',
@@ -28,8 +29,8 @@ export class DiMiNombrePage implements OnInit {
   letterCounter: number; // Contador de letras introducidas en el resultado del slide activo.
   elemViewedInCurrentSlide: Elem; // Elemento observado en el slide activo.
   correctLettersArray: string[] | boolean; // Array con las letras de la palabra englishName del elemViewedInCurrentSlide.
-  inputLettersArray: string[]; // Array con las letras introducidas del slide activo.
-  slideIndex: number;
+  inputLettersArray: string[] | boolean; // Array con las letras introducidas del slide activo.
+  slideIndex = 0;
   constructor(private db: DatabaseService, // DS002: Base de datos SQLite
     public popoverCtrl: PopoverController, // DS006: Implementación de ion-popover para mostrar el final del juego
     private activeRoute: ActivatedRoute, // DS007: Preparación multitabla
@@ -38,34 +39,48 @@ export class DiMiNombrePage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.argumentos = this.activeRoute.snapshot.paramMap.get('tableName'); // Obtenemos la tabla enviada desde select-table. DS007: Preparación multitabla
     this.inputLettersArray = [];
     this.letterCounter = 0;
     this.lockSwipes(true);
-    this.argumentos = this.activeRoute.snapshot.paramMap.get('tableName'); // Obtenemos la tabla enviada desde select-table. DS007: Preparación multitabla
+
     this.db.getDatabaseState().subscribe(rdy => {
       if (rdy) {
         this.db.loadTableForGame(this.argumentos, 5);
-        // A continuación nos suscribiremos al observable que almacena el resultado de SELECT * FROM TABLE desuscribiendonos inmediatamente despues con la pipe(take(1))
-        this.db.getSelectedTableForGame()
-        .pipe(take(1))
-        .subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
-          this.tableArrayElements = table;
-        });
       }
     });
-    this.randomizedTableArrayElements = this.alterOrder.transform(this.tableArrayElements, []); // Ordenamos array aleatoriamente con pipe alterOrder desde el .ts
-    this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.slideIndex]; // Primer elemento del array ordenado aleatoriamente
-    for (let i = 0; i < this.elemViewedInCurrentSlide.englishName.length; i++) {
-      this.inputLettersArray[i] = ' ';
-    }
-    this.correctLettersArray = this.spell.transform(this.elemViewedInCurrentSlide.englishName, []);
+    this.db.getTableState().subscribe(tableRdy => {
+      if (tableRdy) {
+        // A continuación nos suscribiremos al observable que almacena el resultado de SELECT * FROM TABLE desuscribiendonos inmediatamente despues con la pipe(take(1))
+        this.db.getSelectedTableForGame()
+          .pipe(take(1))
+          .subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+            this.tableArrayElements = table;
+            this.randomizedTableArrayElements = this.alterOrder.transform(this.tableArrayElements, []); // Ordenamos array aleatoriamente con pipe alterOrder desde el .ts
+            this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.slideIndex]; // Primer elemento del array ordenado aleatoriamente
+            for (let i = 0; i < this.elemViewedInCurrentSlide.englishName.length; i++) {
+              this.inputLettersArray[i] = ' ';
+            }
+            this.correctLettersArray = this.spell.transform(this.elemViewedInCurrentSlide.englishName, []);
+          });
+      }
+    });
   }
 
-  slideChanged() {
+  getSlideIndex() {
     this.slides.getActiveIndex().then(index => {
       console.log('Slide: ', index);
       this.slideIndex = index;
     });
+  }
+
+  isEndSlide(): boolean {
+    let isEnd;
+    this.slides.isEnd().then(ret => {
+      console.log('IsEnd: ', ret);
+      isEnd = ret;
+    });
+    return isEnd;
   }
 
   lockSwipes(lock: boolean) {
@@ -73,9 +88,11 @@ export class DiMiNombrePage implements OnInit {
   }
 
   nextSlide() {
-    this.slides.slideNext();
+    this.slides.slideNext().then(_ => {
+      this.getSlideIndex();
+    });
     this.letterCounter = 0;
-    this.slideChanged();
+    // this.getSlideIndex();
     this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.slideIndex];
     this.correctLettersArray = this.spell.transform(this.elemViewedInCurrentSlide.englishName, []);
     for (let i = 0; i < this.elemViewedInCurrentSlide.englishName.length; i++) {
@@ -101,13 +118,31 @@ export class DiMiNombrePage implements OnInit {
     }
   }
 
-  isfinishSlide() {
+  isSlideFinished() {
     if (this.letterCounter === this.elemViewedInCurrentSlide.englishName.length &&
-      this.inputLettersArray === this.correctLettersArray) {
-      this.lockSwipes(false);
-      this.nextSlide();
-      this.lockSwipes(true);
+      _.isEqual(this.inputLettersArray, this.correctLettersArray)) {
+      if (this.isEndSlide() === true) {
+        (async () => {
+          await this.delay(1000);
+          // alert('HAS GANADO!!');
+          this.notifications(); // DS006: Implementación de ion-popover para mostrar el final del juego
+        })();
+      } else {
+        this.lockSwipes(false);
+        this.nextSlide();
+        this.lockSwipes(true);
+
+      }
     }
+  }
+
+  /**
+ * Crea un delay/sleep/Timer o callback en la aplicación. Usado con la función async/await permitiremos que dicho callback sea asincrono al resto de la app.
+ * SEJMM DS003.1; Implementación de Timer asincrono para devolver el estado por defecto a las duplas incorrectas pasado un tiempo determinado.
+ * @param ms: Tiempo usado en el timer.
+ */
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
