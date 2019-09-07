@@ -38,9 +38,13 @@ export class UnePalabrasPage implements OnInit {
     this.db.getDatabaseState().subscribe(rdy => {
       if (rdy) {
         this.db.loadTableForGame(this.argumentos, 10);
+      }
+    });
+    this.db.getTableState().subscribe(tableRdy => {
+      if (tableRdy) {
         // A continuación nos suscribiremos al observable que almacena el resultado de SELECT * FROM TABLE desuscribiendonos inmediatamente despues con la pipe(take(1))
         this.db.getSelectedTableForGame()
-        .pipe(skip(1), take(1))
+        .pipe(take(1))
         .subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
           this.tableArrayElements = table;
           // Obtenemos array de elementos limitado

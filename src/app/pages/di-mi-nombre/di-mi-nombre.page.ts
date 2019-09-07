@@ -75,12 +75,11 @@ export class DiMiNombrePage implements OnInit {
   }
 
   isEndSlide(): boolean {
-    let isEnd;
-    this.slides.isEnd().then(ret => {
+    const a = this.slides.isEnd().then(ret => {
       console.log('IsEnd: ', ret);
-      isEnd = ret;
+      return ret;
     });
-    return isEnd;
+    return a;
   }
 
   lockSwipes(lock: boolean) {
@@ -88,13 +87,13 @@ export class DiMiNombrePage implements OnInit {
   }
 
   nextSlide() {
-    this.slides.slideNext().then(_ => {
-      this.getSlideIndex();
-    });
+    this.slides.slideNext();
     this.letterCounter = 0;
     // this.getSlideIndex();
+    this.slideIndex++;
     this.elemViewedInCurrentSlide = this.randomizedTableArrayElements[this.slideIndex];
     this.correctLettersArray = this.spell.transform(this.elemViewedInCurrentSlide.englishName, []);
+    this.inputLettersArray = []; // Reinicializamos el array de letras introducidas para evitar caracteres de más
     for (let i = 0; i < this.elemViewedInCurrentSlide.englishName.length; i++) {
       this.inputLettersArray[i] = ' ';
     }
@@ -121,7 +120,7 @@ export class DiMiNombrePage implements OnInit {
   isSlideFinished() {
     if (this.letterCounter === this.elemViewedInCurrentSlide.englishName.length &&
       _.isEqual(this.inputLettersArray, this.correctLettersArray)) {
-      if (this.isEndSlide() === true) {
+      if (this.isEndSlide() === true || this.slideIndex === 4) {
         (async () => {
           await this.delay(1000);
           // alert('HAS GANADO!!');
