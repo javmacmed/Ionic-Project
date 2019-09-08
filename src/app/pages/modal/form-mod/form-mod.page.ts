@@ -1,12 +1,11 @@
 /* SEJMM DS009.1: Implementación de formulario para modificación de tablas */
-import { Component, Input, OnInit } from '@angular/core';
-import { NavController, ModalController } from '@ionic/angular';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
 import { DatabaseService, Elem } from 'src/app/services/database.service';
 import { Keyboard } from '@ionic-native/keyboard/ngx'; /* SEJMM DS010; Ionic KeyBoard */
-import { skip, take} from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
-import { Observable } from 'rxjs';
+import { skip, take, takeUntil} from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+import { Subject, BehaviorSubject } from 'rxjs';
 // Components
 import { AlertController } from '@ionic/angular'; // SEJMM DS009.3: Alert mostrado para confirmar borrado de tabla y elemento de tabla.
 
@@ -15,7 +14,8 @@ import { AlertController } from '@ionic/angular'; // SEJMM DS009.3: Alert mostra
   templateUrl: './form-mod.page.html',
   styleUrls: ['./form-mod.page.scss'],
 })
-export class FormModPage implements OnInit {
+export class FormModPage implements OnInit, OnDestroy {
+  private unsubscribe$: Subject<void> = new Subject();
   // Data passed in by componentProps
   @Input() tableNameInput: string; // Nombre de la tabla de entrada
 
@@ -41,9 +41,7 @@ export class FormModPage implements OnInit {
   };
 
   constructor(
-    private nav: NavController,
     private modalCtrl: ModalController,
-    private sanitizer: DomSanitizer,
     public formBuilder: FormBuilder,
     private db: DatabaseService,
     public keyboard: Keyboard, /* SEJMM DS010; Definimos como pública para poder acceder a ella desde el HTML */
@@ -66,7 +64,7 @@ export class FormModPage implements OnInit {
     });
 
     /* Obtenemos las columnas de la tabla pasada como input para crear los controles de éstas */
-    this.db.getDatabaseState().subscribe(rdy => {
+    this.db.getDatabaseState().pipe(takeUntil(this.unsubscribe$)).subscribe(rdy => {
       if (rdy) {
         this.db.loadTable(this.tableNameInput);
         // A continuación nos suscribiremos al observable que almacena el resultado de SELECT * FROM TABLE desuscribiendonos inmediatamente despues con la pipe(take(1))
@@ -84,6 +82,12 @@ export class FormModPage implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    console.log('Modificación Formulario: ngOnDestory');
+    this.db.selectedTable = new BehaviorSubject<Elem[]>([]);
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
  /**
  * @description Cierra el modal
  */

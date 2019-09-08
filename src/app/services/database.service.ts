@@ -113,7 +113,6 @@ export class DatabaseService {
    * @param tableName
    */
   loadTable(tableName: string) {
-    // this.selectedTable = new BehaviorSubject([]); // SEJMM DS009.1; Fix Reinicialización de this.selectedTable para evitar dos tablas en una
     let query = 'SELECT * FROM ';
     query = query.concat(tableName);
     return this.database.executeSql(query, []).then(data => {
@@ -140,7 +139,7 @@ export class DatabaseService {
    */
   addTableElement(tableName: string, spanishName: string, englishName: string) {
     const data = [spanishName, englishName];
-    return this.database.executeSql('INSERT INTO ' + tableName + ' (spanishName, englishName) VALUES (?, ?)', data).then(data => {
+    return this.database.executeSql('INSERT INTO ' + tableName + ' (spanishName, englishName) VALUES (?, ?)', data).then(_ => {
       this.loadTable(tableName);
     });
   }
@@ -193,6 +192,22 @@ export class DatabaseService {
   }
 
   /**
+   * 08/09/2019 - First version
+   * SEJMM DS011
+   * @description: Dado un elemento (Elem), actualiza un elemento de la tabla deseada
+   * @param elemento
+   * @param tablaSelected
+   */
+  updateTableElementForResults(elemento: Elem, tablaSelected: string) {
+    const query = `UPDATE ` + tablaSelected + ` SET aciertos = '` + elemento.spanishName + `', errores = '` + elemento.englishName + `' WHERE id = ` + elemento.id;
+
+    // const data = [elemento.spanishName, elemento.englishName];
+    return this.database.executeSql(query, []).then(_ => {
+      this.loadTable(tablaSelected);
+    });
+  }
+
+  /**
    * 15/08/2019 - First version
    * SEJMM DS007
    * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
@@ -204,6 +219,20 @@ export class DatabaseService {
       this.loadTables();
     });
   }
+
+    /**
+   * 15/08/2019 - First version
+   * SEJMM DS007
+   * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
+   */
+  createTableForResults(tableName: string) {
+    let query = 'CREATE TABLE IF NOT EXISTS ';
+    query = query.concat(tableName + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, aciertos TEXT NOT NULL, errores TEXT NOT NULL)');
+    return this.database.executeSql(query, []).then(data => {
+      this.loadTables();
+    });
+  }
+
 
   /**
    * 18/08/2019 - First version

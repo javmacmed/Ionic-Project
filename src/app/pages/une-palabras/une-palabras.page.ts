@@ -4,26 +4,26 @@
  * Update 25/07/2019; SEJMM DS003.1: Implementación de Timer asincrono para devolver el estado por defecto a las duplas incorrectas pasado un tiempo determinado.
  * */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DatabaseService, Elem } from './../../services/database.service'; // Importamos clases DB
-import { Observable } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { ActivatedRoute } from '@angular/router';
-import { skip, take } from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+import { takeUntil } from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
 
 @Component({
   selector: 'app-une-palabras',
   templateUrl: './une-palabras.page.html',
   styleUrls: ['./une-palabras.page.scss'],
 })
-export class UnePalabrasPage implements OnInit {
+export class UnePalabrasPage implements OnInit, OnDestroy {
+  private unsubscribe$: Subject<void> = new Subject();
   /** Atributos de clase **/
   numWordsSelected = 0;
   lastElemColumnSelected = 2; // Última columna seleccionada; 0: izquierda, 1: derecha, 2: No determinada
   idOfWordSelected: number;
   tableArrayElements: Elem[] = []; // DS007: Preparación multitabla
-  // stableArrayElementsLimited: Elem[] = []; // DS003.3.1: UPDATE REORDER CON LIMITE
   idResultsMap = new Map<number, Map<number, number>>(); // Mapa para almacenar las relaciones id-resultado del juego en función de las columnas
   numDuplasCorrectas = 0; // Numero de duplas correctas. Usadas para determinar una condición final de juego (Fácil)
   argumentos = null; // DS007: Preparación multitabla
@@ -35,21 +35,18 @@ export class UnePalabrasPage implements OnInit {
 
   ngOnInit() {
     this.argumentos = this.activeRoute.snapshot.paramMap.get('tableName'); // Obtenemos la tabla enviada desde select-table. DS007: Preparación multitabla
-    this.db.getDatabaseState().subscribe(rdy => {
+    this.db.getDatabaseState().pipe(takeUntil(this.unsubscribe$)).subscribe(rdy => {
       if (rdy) {
         this.db.loadTableForGame(this.argumentos, 10);
       }
     });
-    this.db.getTableState().subscribe(tableRdy => {
+    this.db.getTableState().pipe(takeUntil(this.unsubscribe$)).subscribe(tableRdy => {
       if (tableRdy) {
         // A continuación nos suscribiremos al observable que almacena el resultado de SELECT * FROM TABLE desuscribiendonos inmediatamente despues con la pipe(take(1))
         this.db.getSelectedTableForGame()
-        .pipe(take(1))
-        .subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+        // .pipe(take(1))
+        .pipe(takeUntil(this.unsubscribe$)).subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
           this.tableArrayElements = table;
-          // Obtenemos array de elementos limitado
-          // this.tableArrayElementsLimited = this.tableArrayElements.slice(0, 4 + 1); // Suma de 1 al final es debida a que el final del intervalo no esta incluido.
-
           /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
             modo definiremos como valor por defecto 3 (Color por defecto, no elegido).
           */
@@ -64,6 +61,12 @@ export class UnePalabrasPage implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    console.log('Une palabras: ngOnDestory');
+    this.db.selectedTableForGame = new BehaviorSubject<Elem[]>([]);
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
   /**
    * @description: Establece el resultado actual del par de valores para cada fila de la tabla seleccionada, almacenando este
    * como valor en el mapa 'idResultsMap' que consta de una mapa id-map(columna-valor) para identificar el color que deberia

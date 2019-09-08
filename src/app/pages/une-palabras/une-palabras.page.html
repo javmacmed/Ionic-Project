@@ -5,53 +5,48 @@
         <ion-text color="light" class="fw700">Une las palabras</ion-text>
       </ion-text>
     </ion-title>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" style="--box-shadow:none; --background-hover: none; --background-activated: none; --background: none;">
+        <ion-icon slot="icon-only" src="../../../assets/img/flecha-derecha.svg"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-row> 
+  <ion-row>
     <ion-col>
       <div class="ion-text-center">
-          <ion-text class="fw700" color="light" class="columnTitle"><h3>Español</h3></ion-text>
-          <ion-icon size="large" src="../../../assets/img/espana.svg"></ion-icon>
+        <ion-text class="fw700" color="light" class="columnTitle">
+          <h3>Español</h3>
+        </ion-text>
+        <ion-icon size="large" src="../../../assets/img/espana.svg"></ion-icon>
       </div>
       <ion-list class="bg-list">
-        <!-- <ion-list-header>
-            <ion-label class="ion-text-center">
-                <ion-text color="light" class="columnTitle"><h2>Español</h2></ion-text>
-            </ion-label>
-        </ion-list-header> -->
-        <ion-button strong fill="clear" expand="block" [ngClass]="{'sib': setElementColour(tableElement.id, 0) == 1, 'nob': setElementColour(tableElement.id, 0) == 0, 'eligiendob': setElementColour(tableElement.id, 0) == 2 , 'defaultb': setElementColour(tableElement.id, 0) == 3}" *ngFor="let tableElement of tableArrayElements | alterOrder" (click)="selectWords(tableElement.id,0)" [id]="tableElement.id">
-            {{ tableElement.spanishName }}
+        <ion-button strong fill="clear" expand="block"
+          [ngClass]="{'sib': setElementColour(tableElement.id, 0) == 1, 'nob': setElementColour(tableElement.id, 0) == 0, 'eligiendob': setElementColour(tableElement.id, 0) == 2 , 'defaultb': setElementColour(tableElement.id, 0) == 3}"
+          *ngFor="let tableElement of tableArrayElements | alterOrder" (click)="selectWords(tableElement.id,0)"
+          [id]="tableElement.id">
+          {{ tableElement.spanishName }}
         </ion-button>
-        <!-- <ion-item class="ion-text-center" [ngClass]="{'si': setElementColour(tableElement.id, 0) == 1, 'no': setElementColour(tableElement.id, 0) == 0, 'eligiendo': setElementColour(tableElement.id, 0) == 2 , 'default': setElementColour(tableElement.id, 0) == 3}" lines="full" *ngFor="let tableElement of tableElements | alterOrder" (click)="selectWords(tableElement.id,0)" [id]="tableElement.id">
-          <ion-label class="ion-text-center">
-            <ion-text [ngClass]="{'cleanText': setElementColour(tableElement.id, 0) == 0 || setElementColour(tableElement.id, 0) == 1}">{{ tableElement.spanishName }}</ion-text>
-          </ion-label>
-        </ion-item> -->
       </ion-list>
     </ion-col>
 
     <ion-col>
       <div class="ion-text-center">
-          <ion-text class="fw700" color="light" class="columnTitle"><h3>Inglés</h3></ion-text>
-          <ion-icon size="large" src="../../../assets/img/reino-unido.svg"></ion-icon>  
+        <ion-text class="fw700" color="light" class="columnTitle">
+          <h3>Inglés</h3>
+        </ion-text>
+        <ion-icon size="large" src="../../../assets/img/reino-unido.svg"></ion-icon>
       </div>
 
       <ion-list class="bg-list">
-        <!-- <ion-list-header>
-            <ion-label class="ion-text-center">
-                <ion-text color="light" class="columnTitle"><h2>Inglés</h2></ion-text>
-            </ion-label>
-        </ion-list-header> -->
-        <ion-button strong fill="clear" expand="block" [ngClass]="{'sib': setElementColour(tableElement.id, 1) == 1, 'nob': setElementColour(tableElement.id, 1) == 0, 'eligiendob': setElementColour(tableElement.id, 1) == 2 , 'defaultb': setElementColour(tableElement.id, 1) == 3}" *ngFor="let tableElement of tableArrayElements | alterOrder" (click)="selectWords(tableElement.id,1)" [id]="tableElement.id">
+        <ion-button strong fill="clear" expand="block"
+          [ngClass]="{'sib': setElementColour(tableElement.id, 1) == 1, 'nob': setElementColour(tableElement.id, 1) == 0, 'eligiendob': setElementColour(tableElement.id, 1) == 2 , 'defaultb': setElementColour(tableElement.id, 1) == 3}"
+          *ngFor="let tableElement of tableArrayElements | alterOrder" (click)="selectWords(tableElement.id,1)"
+          [id]="tableElement.id">
           {{ tableElement.englishName }}
         </ion-button>
-        <!-- <ion-item class="ion-text-center" [ngClass]="{'si': setElementColour(tableElement.id, 1) == 1, 'no': setElementColour(tableElement.id, 1) == 0, 'eligiendo': setElementColour(tableElement.id, 1) == 2 , 'default': setElementColour(tableElement.id, 1) == 3}" lines="full" *ngFor="let tableElement of tableElements | alterOrder" (click)="selectWords(tableElement.id,1)" [id]="tableElement.id">
-          <ion-label>
-            <ion-text [ngClass]="{'cleanText': setElementColour(tableElement.id, 1) == 0 || setElementColour(tableElement.id, 1) == 1}">{{ tableElement.englishName }}</ion-text>
-          </ion-label>
-        </ion-item> -->
       </ion-list>
     </ion-col>
 

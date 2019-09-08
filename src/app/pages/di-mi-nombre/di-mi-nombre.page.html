@@ -5,6 +5,11 @@
         <ion-text color="light" class="fw700">Di Mi Nombre</ion-text>
       </ion-text>
     </ion-title>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" style="--box-shadow:none; --background-hover: none; --background-activated: none; --background: none;">
+        <ion-icon slot="icon-only" src="../../../assets/img/rompecabezas.svg"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -26,7 +31,8 @@
 
         <ion-row justify-content-center>
           <ion-col>
-            <ion-button size="large" strong=true *ngFor="let letter of correctLettersArray | shuffle" (click)="gameLogic(letter)">
+            <ion-button size="large" strong=true *ngFor="let letter of correctLettersArray | shuffle"
+              (click)="gameLogic(letter)">
               <ion-text color="light">
                 {{ letter }}
               </ion-text>
@@ -47,18 +53,38 @@
         </ion-row>
 
         <ion-row style="margin-top: 10%;margin-bottom: 10%" justify-content-center>
-          <ion-button fill="outline" (click)="deleteLetter()">
+          <ion-button size="large" color="light" fill="clear" (click)="deleteLetter()">
             <ion-icon slot="icon-only" name="backspace"></ion-icon>
           </ion-button>
-          <ion-button fill="outline" (click)="isSlideFinished()">
+          <ion-button size="large" color="light" fill="clear" (click)="isSlideFinished()">
             <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
           </ion-button>
         </ion-row>
-      </ion-grid>
-      <!-- <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" /></svg> -->
 
+        <ion-row style="margin-top: 10%;margin-bottom: 10%" justify-content-center>
+          <ion-col>
+            <ion-item color="danger">
+              <ion-label style="text-align:center;" color="light">
+                <strong>{{this.incorrectAnswers}} Errores</strong>
+              </ion-label>
+            </ion-item>
+          </ion-col>
+
+          <ion-col>
+            <ion-item color="success">
+              <ion-label style="text-align:center;" color="light">
+                <strong>{{this.correctAnswers}} Aciertos</strong>
+              </ion-label>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <!-- <ion-row *ngIf="ok" margin-top justify-content-center>
+          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+          </svg>
+        </ion-row> -->
+      </ion-grid>
     </ion-slide>
 
   </ion-slides>
