@@ -114,4 +114,8 @@ export class HomeResultsPage {
   goToManageTables() {
     this.navCtrl.navigateRoot('/manage-tables');
   }
+
+  goToResults() {
+    this.navCtrl.navigateRoot('/results');
+  }
 }

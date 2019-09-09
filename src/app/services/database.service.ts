@@ -15,6 +15,12 @@ export interface Elem {
   englishName: string;
 }
 
+export interface ResElem { // SEJMM DS011
+  id: number;
+  aciertos: number;
+  errores: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -25,7 +31,9 @@ export class DatabaseService {
 
   selectedTable = new BehaviorSubject<Elem[]>([]); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
   selectedTableForGame = new BehaviorSubject<Elem[]>([]); // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+  selectedTableForResults = new BehaviorSubject<ResElem[]>([]); // SEJMM DS011; Observable para mostrar en la tabla de resultados
   tablesArrayName = new BehaviorSubject<string[]>([]); // SEJMM DS007; Preparamos para multitabla.
+  tablesArrayNameForResults = new BehaviorSubject<string[]>([]); // SEJMM DS011; Para obtener tablas de resultados
 
   constructor(private plt: Platform, private sqlitePorter: SQLitePorter, private sqlite: SQLite, private http: HttpClient) {
     this.plt.ready().then(() => {
@@ -57,10 +65,16 @@ export class DatabaseService {
           .catch(e => console.error(e));
       });
   }
-
+/**
+ * @description Devuelve el estado de la base de datos establecido tras leer la semilla 'seed.sql'
+ */
   getDatabaseState() {
     return this.dbReady.asObservable();
   }
+
+/**
+ * @description Devuelve el estado de la base de datos establecido tras leer una tabla de la base de datos
+ */
   getTableState() {
     return this.tableReady.asObservable();
   }
@@ -72,11 +86,18 @@ export class DatabaseService {
     return this.selectedTable.asObservable();
   }
 
-   /**
-   * SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
-   */
+  /**
+  * SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
+  */
   getSelectedTableForGame(): Observable<Elem[]> {
     return this.selectedTableForGame.asObservable();
+  }
+
+  /**
+  * SEJMM DS011; Devuelve la tabla de resultados requerida
+  */
+  getSelectedTableForResults(): Observable<ResElem[]> {
+    return this.selectedTableForResults.asObservable();
   }
 
   /**** SEJMM INI DS007; Preparar base de datos para las multiples tablas creadas mediante "Crea tu tabla" ****/
@@ -129,6 +150,31 @@ export class DatabaseService {
       this.selectedTable.next(table);
     });
   }
+
+  /**
+   * 08/09/2019 - First version
+   * SEJMM DS011
+   * @description: Carga lista de elementos para mostrar en Resultados
+   * @param tableName
+   */
+  loadTableForResults(tableName: string) {
+    let query = 'SELECT * FROM ';
+    query = query.concat(tableName);
+    return this.database.executeSql(query, []).then(data => {
+      const table: ResElem[] = [];
+      if (data.rows.length > 0) {
+        for (let i = 0; i < data.rows.length; i++) {
+          table.push({
+            id: data.rows.item(i).id,
+            aciertos: data.rows.item(i).aciertos,
+            errores: data.rows.item(i).errores
+          });
+        }
+      }
+      this.selectedTableForResults.next(table);
+    });
+  }
+
   /**
    * 07/08/2019 - First version
    * SEJMM DS007
@@ -144,6 +190,20 @@ export class DatabaseService {
     });
   }
 
+  /**
+   * 08/09/2019 - First version
+   * SEJMM DS011
+   * @description: Añade un elemento a la tabla.
+   * @param tableName Tabla a la que se añadirá el elemento
+   * @param aciertos Nombre elemento en español
+   * @param errores Nombre elemento en inglés
+   */
+  addTableElementForResults(tableName: string, aciertos: number, errores: number) {
+    const data = [aciertos, errores];
+    return this.database.executeSql('INSERT INTO ' + tableName + ' (aciertos, errores) VALUES (?, ?)', data).then(_ => {
+      this.loadTable(tableName);
+    });
+  }
   /**
    * 07/08/2019 - First version
    * SEJMM DS007
@@ -185,7 +245,6 @@ export class DatabaseService {
   updateTableElement(elemento: Elem, tablaSelected: string) {
     const query = `UPDATE ` + tablaSelected + ` SET spanishName = '` + elemento.spanishName + `', englishName = '` + elemento.englishName + `' WHERE id = ` + elemento.id;
 
-    // const data = [elemento.spanishName, elemento.englishName];
     return this.database.executeSql(query, []).then(_ => {
       this.loadTable(tablaSelected);
     });
@@ -194,14 +253,13 @@ export class DatabaseService {
   /**
    * 08/09/2019 - First version
    * SEJMM DS011
-   * @description: Dado un elemento (Elem), actualiza un elemento de la tabla deseada
+   * @description: Dado un elemento (ResElem), actualiza un elemento de la tabla deseada para mostrar en Resultados
    * @param elemento
    * @param tablaSelected
    */
-  updateTableElementForResults(elemento: Elem, tablaSelected: string) {
-    const query = `UPDATE ` + tablaSelected + ` SET aciertos = '` + elemento.spanishName + `', errores = '` + elemento.englishName + `' WHERE id = ` + elemento.id;
+  updateTableElementForResults(elemento: ResElem, tablaSelected: string) {
+    const query = `UPDATE ` + tablaSelected + ` SET aciertos = '` + elemento.aciertos + `', errores = '` + elemento.errores + `' WHERE id = ` + elemento.id;
 
-    // const data = [elemento.spanishName, elemento.englishName];
     return this.database.executeSql(query, []).then(_ => {
       this.loadTable(tablaSelected);
     });
@@ -222,12 +280,12 @@ export class DatabaseService {
 
     /**
    * 15/08/2019 - First version
-   * SEJMM DS007
-   * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
+   * SEJMM DS011
+   * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName" para mostrar en Resultados.
    */
   createTableForResults(tableName: string) {
     let query = 'CREATE TABLE IF NOT EXISTS ';
-    query = query.concat(tableName + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, aciertos TEXT NOT NULL, errores TEXT NOT NULL)');
+    query = query.concat(tableName + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, aciertos INTEGER NOT NULL, errores INTEGER NOT NULL)');
     return this.database.executeSql(query, []).then(data => {
       this.loadTables();
     });
@@ -274,10 +332,22 @@ export class DatabaseService {
    /**
    * 11/08/2019 - First version
    * SEJMM DS007
+   * @description: Devuelve un array con los nombres de todas las tablas existentes en la base de datos con el modelo res_TABLA_JUEGO.
+   */
+  getTablesForResults(): Observable<string[]> {
+    return this.tablesArrayNameForResults.asObservable();
+  }
+
+
+
+   /**
+   * 11/08/2019 - First version
+   * 08/09/2019 - Modificación para permitir evitar las tablas de resultados en las busquedas (DS011)
+   * SEJMM DS007
    * @description: Carga lista de tablas en la DB y las almacena en "tablesArrayName".
    */
   loadTables() {
-    const query = `SELECT tbl_name FROM sqlite_master WHERE type = 'table' AND tbl_name NOT LIKE 'sqlite_%'`;
+    const query = `SELECT tbl_name FROM sqlite_master WHERE type = 'table' AND tbl_name NOT LIKE 'sqlite_%' AND tbl_name NOT LIKE 'res_%'`;
     return this.database.executeSql(query, []).then(data => {
       const tables: string[] = [];
       if (data.rows.length > 0) {
@@ -286,6 +356,24 @@ export class DatabaseService {
         }
       }
       this.tablesArrayName.next(tables);
+    });
+  }
+
+/**
+* 08/09/2019 - First version
+* SEJMM DS011
+* @description: Carga lista de tablas en la DB y las almacena en "tablesArrayName" para mostrar en resultados.
+*/
+  loadTablesForResults() {
+    const query = `SELECT tbl_name FROM sqlite_master WHERE type = 'table' AND tbl_name LIKE 'res_%'`;
+    return this.database.executeSql(query, []).then(data => {
+      const tables: string[] = [];
+      if (data.rows.length > 0) {
+        for (let i = 0; i < data.rows.length; i++) {
+          tables.push(data.rows.item(i).tbl_name);
+        }
+      }
+      this.tablesArrayNameForResults.next(tables);
     });
   }
 

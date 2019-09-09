@@ -3,7 +3,7 @@
  * First version: SEJMM DS003 01/09/2019; Desarrollo 'Di Mi Nombre'; Primera Fase; Lógica base.
  * */
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { DatabaseService, Elem } from './../../services/database.service'; // Importamos clases DB
+import { DatabaseService, Elem, ResElem} from './../../services/database.service'; // Importamos clases DB
 import { Subject, BehaviorSubject } from 'rxjs';
 import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
@@ -24,6 +24,8 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
   /** Atributos de clase **/
   @ViewChild('slides') slides;
   tableArrayElements: Elem[] = []; // DS007: Preparación multitabla
+  tableArrayResElements: ResElem[] = []; // DS011: Tabla de resultados obtenida desde DB para sumar resultados de esta ronda
+  tablesArrayName: string[] = []; // DS011; Todas las tablas para buscar entre ellas la tabla concerniente a esta version de Di mi nombre
   randomizedTableArrayElements: Elem[] = []; // DS007: Preparación multitabla
   argumentos = null; // DS007: Preparación multitabla
   activeIndex: number;
@@ -53,7 +55,15 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
 
     this.db.getDatabaseState().pipe(takeUntil(this.unsubscribe$)).subscribe(rdy => {
       if (rdy) {
+        /* Cargamos tabla de elementos para mostrar en los slides */
         this.db.loadTableForGame(this.argumentos, 5);
+        /* Cargamos tablas para obtener al finalizar el juego la tabla resultados que corresponde en caso de existir (DS011)*/
+        this.db.loadTablesForResults();
+        this.db.getTablesForResults()
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(tables => {
+          this.tablesArrayName = tables;
+        });
       }
     });
     this.db.getTableState().pipe(takeUntil(this.unsubscribe$)).subscribe(tableRdy => {
@@ -165,6 +175,29 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
         } else {
           this.incorrectAnswers++;
         }
+        /* Creamos tabla de resultados correspondiente con resultado del juego obtenido o, de ya existir, sumaremos los errores y aciertos a la suma total almacenada esta tabla y este juego */
+        const resultTableName = 'res_' + this.argumentos + '_diminombre';
+        if (this.tablesArrayName.includes(resultTableName)) {
+          // Si la tabla ya existe
+          this.db.loadTableForResults(resultTableName);
+          this.db.getSelectedTableForResults()
+          .pipe(takeUntil(this.unsubscribe$))
+          .subscribe(tableResult => {
+            this.tableArrayResElements = tableResult;
+            const auxResElem: ResElem = {
+              id: this.tableArrayResElements[0].id,
+              aciertos: this.tableArrayResElements[0].aciertos + this.correctAnswers,
+              errores: this.tableArrayResElements[0].errores + this.incorrectAnswers
+            };
+            this.db.updateTableElementForResults(auxResElem, resultTableName);
+          });
+        } else {
+          // Si la tabla nunca ha sido creada
+          this.db.createTableForResults(resultTableName); // Creamos tabla
+          this.db.addTableElementForResults(resultTableName, this.correctAnswers, this.incorrectAnswers); // Añadimos elementos
+        }
+
+        /* Mostramos fin del juego */
         (async () => {
           await this.delay(1000);
           // alert('HAS GANADO!!');

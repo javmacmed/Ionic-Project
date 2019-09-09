@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home-results"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-text color="light" class="fw700">Resultados</ion-text>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list class="bg-list" inset=true>
+    <ion-button margin shape="round" expand="full" *ngFor="let table of tablesArrayName" (click)="goToShowResults(table)">
+      {{ table }}
+    </ion-button>
+  </ion-list>
+</ion-content>

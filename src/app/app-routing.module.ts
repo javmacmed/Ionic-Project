@@ -14,7 +14,9 @@ const routes: Routes = [
   { path: 'manage-tables', loadChildren: './pages/manage-tables/manage-tables.module#ManageTablesPageModule' },
   { path: 'select-table', loadChildren: './pages/select-table/select-table.module#SelectTablePageModule' },
   { path: 'select-game/:tableName', loadChildren: './pages/select-game/select-game.module#SelectGamePageModule' },
-  { path: 'di-mi-nombre/:tableName', loadChildren: './pages/di-mi-nombre/di-mi-nombre.module#DiMiNombrePageModule' }
+  { path: 'di-mi-nombre/:tableName', loadChildren: './pages/di-mi-nombre/di-mi-nombre.module#DiMiNombrePageModule' },
+  { path: 'results', loadChildren: './pages/results/results.module#ResultsPageModule' },
+  { path: 'show-results/:tableName', loadChildren: './pages/show-results/show-results.module#ShowResultsPageModule' } // SEJMM DS011
 ];
 
 @NgModule({

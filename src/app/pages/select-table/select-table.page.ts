@@ -28,6 +28,7 @@ export class SelectTablePage implements OnInit, OnDestroy {
         this.db.loadTables();
         this.db.getTables().pipe(takeUntil(this.unsubscribe$)).subscribe(tables => {
           this.tablesArrayName = tables;
+          /* Ordenamos las tablas en orden alfabético */
           this.tablesArrayName.sort(function (a, b) {
             if (a < b) { return -1; }
             if (a > b) { return 1; }
@@ -39,7 +40,7 @@ export class SelectTablePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('Select Table: ngOnDestory');
+    console.log('Select Table: ngOnDestroy');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }

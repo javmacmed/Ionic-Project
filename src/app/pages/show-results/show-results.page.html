@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home-results"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-text color="light" class="fw700">Resultados obtenidos en {{this.argumentos}} </ion-text>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid padding-top>
+
+    <ion-row style="margin-top: 10%;margin-bottom: 10%" justify-content-center>
+      <ion-col>
+        <ion-item color="danger">
+          <ion-label *ngIf="ok" style="text-align:center;" color="light">
+            <strong>{{this.auxResElem.errores}} Errores</strong>
+          </ion-label>
+          <ion-label *ngIf="!ok" style="text-align:center;" color="light">
+              <strong>Nº Errores no disponible</strong>
+            </ion-label>
+        </ion-item>
+      </ion-col>
+
+      <ion-col>
+        <ion-item color="success">
+          <ion-label *ngIf="ok" style="text-align:center;" color="light">
+            <strong>{{this.auxResElem.aciertos}} Aciertos</strong>
+          </ion-label>
+          <ion-label *ngIf="!ok" style="text-align:center;" color="light">
+              <strong>Nº Aciertos no disponible</strong>
+            </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

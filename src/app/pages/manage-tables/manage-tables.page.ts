@@ -7,7 +7,8 @@ import { Component, OnInit } from '@angular/core';
 import { DatabaseService, Elem } from './../../services/database.service'; // Importamos clases DB
 import {
   NavController,
-  ModalController } from '@ionic/angular';
+  ModalController
+} from '@ionic/angular';
 // Modals
 import { FormCreationPage } from './../modal/form-creation/form-creation.page';
 import { FormModPage } from './../modal/form-mod/form-mod.page'; // DS009.1: Implementación de formulario para modificación de tablas
@@ -36,6 +37,7 @@ export class ManageTablesPage implements OnInit {
         this.db.loadTables();
         this.db.getTables().subscribe(tables => {
           this.tablesArrayName = tables;
+          /* Ordenamos las tablas en orden alfabético */
           this.tablesArrayName.sort(function (a, b) {
             if (a < b) { return -1; }
             if (a > b) { return 1; }
