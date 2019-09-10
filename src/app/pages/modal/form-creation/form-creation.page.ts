@@ -50,7 +50,7 @@ export class FormCreationPage implements OnInit {
         Validators.maxLength(20),
         Validators.minLength(3),
         // Validators.pattern('^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$'),
-        Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]*'), // Se admitiran nombres de tabla que solo tengan letras y espacios
+        Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ ]*'), // Se admitiran nombres de tabla que solo tengan letras y espacios
         Validators.required
       ]))
     });
@@ -69,8 +69,8 @@ export class FormCreationPage implements OnInit {
    */
   addControl() {
     this.validation_form.addControl('par' + (this.duplaCount + 1), new FormGroup({
-      spanishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]*'), Validators.required])),
-      englishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]*'), Validators.required]))
+      spanishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ ]*'), Validators.required])),
+      englishName: new FormControl('', Validators.compose([Validators.maxLength(15), Validators.minLength(2), Validators.pattern('[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ ]*'), Validators.required]))
     }));
     console.log('Contador duplas: ' + this.duplaCount);
 

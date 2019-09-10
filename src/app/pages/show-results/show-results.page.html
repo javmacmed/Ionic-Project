@@ -4,23 +4,31 @@
       <ion-back-button defaultHref="home-results"></ion-back-button>
     </ion-buttons>
     <ion-title>
-      <ion-text color="light" class="fw700">Resultados obtenidos en {{this.argumentos}} </ion-text>
+      <ion-text color="light" class="fw700">Resultados Tabla {{this.argumentos}} </ion-text>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-grid padding-top>
+    <!-- REPETIR LA SIGUIENTE ESTRUCTURA PARA CADA JUEGO AÑADIDO DEL CUAL SE QUIERA OBSERVAR LOS RESULTADOS -->
+    <ion-row justify-content-center>
+      <ion-item>
+        <ion-label style="text-align:center;" color="light">
+          <strong><h1>DI MI NOMBRE</h1></strong>
+        </ion-label>
+      </ion-item>
+    </ion-row>
 
-    <ion-row style="margin-top: 10%;margin-bottom: 10%" justify-content-center>
+    <ion-row style="margin-top: 5%;margin-bottom: 10%" justify-content-center>
       <ion-col>
         <ion-item color="danger">
           <ion-label *ngIf="ok" style="text-align:center;" color="light">
             <strong>{{this.auxResElem.errores}} Errores</strong>
           </ion-label>
           <ion-label *ngIf="!ok" style="text-align:center;" color="light">
-              <strong>Nº Errores no disponible</strong>
-            </ion-label>
+            <strong>Nº Errores no disponible</strong>
+          </ion-label>
         </ion-item>
       </ion-col>
 
@@ -30,10 +38,13 @@
             <strong>{{this.auxResElem.aciertos}} Aciertos</strong>
           </ion-label>
           <ion-label *ngIf="!ok" style="text-align:center;" color="light">
-              <strong>Nº Aciertos no disponible</strong>
-            </ion-label>
+            <strong>Nº Aciertos no disponible</strong>
+          </ion-label>
         </ion-item>
       </ion-col>
     </ion-row>
+
+    <ion-progress-bar *ngIf="ok" value="{{porcentaje}}"></ion-progress-bar>
+
   </ion-grid>
 </ion-content>

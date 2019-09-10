@@ -32,18 +32,18 @@ export class AppComponent {
         icon: 'home'
       },
       {
-        title: 'About',
+        title: 'Sobre Say My Name',
         url: '/about',
         direct: 'forward',
         icon: 'information-circle-outline'
-      },
-
-      {
-        title: 'App Settings',
-        url: '/settings',
-        direct: 'forward',
-        icon: 'cog'
       }
+      // ,
+      // {
+      //   title: 'App Settings',
+      //   url: '/settings',
+      //   direct: 'forward',
+      //   icon: 'cog'
+      // }
     ];
 
     this.initializeApp();

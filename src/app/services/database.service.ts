@@ -27,7 +27,9 @@ export interface ResElem { // SEJMM DS011
 export class DatabaseService {
   private database: SQLiteObject;
   private dbReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  private tableReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public tableReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public tableForResultsReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
 
   selectedTable = new BehaviorSubject<Elem[]>([]); // SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
   selectedTableForGame = new BehaviorSubject<Elem[]>([]); // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
@@ -79,6 +81,13 @@ export class DatabaseService {
     return this.tableReady.asObservable();
   }
 
+/** SEJMM DS011
+ * @description Devuelve el estado de la base de datos establecido tras leer una tabla de la base de datos
+ */
+getTableForResultsState() {
+  return this.tableForResultsReady.asObservable();
+}
+
   /**
    * SEJMM DS007; Preparamos para tabla creada mediante "Crea tu tabla"
    */
@@ -109,8 +118,8 @@ export class DatabaseService {
    * @param limit Limite de elementos a cargar
    */
   loadTableForGame(tableName: string, limit: number) {
-    let query = 'SELECT * FROM ';
-    query = query.concat(tableName + ' LIMIT ' + limit); // DS003.3.1: UPDATE REORDER CON LIMITE
+    let query = 'SELECT * FROM [';
+    query = query.concat(tableName + '] LIMIT ' + limit); // DS003.3.1: UPDATE REORDER CON LIMITE
     return this.database.executeSql(query, []).then(data => {
       const table: Elem[] = [];
       if (data.rows.length > 0) {
@@ -134,8 +143,8 @@ export class DatabaseService {
    * @param tableName
    */
   loadTable(tableName: string) {
-    let query = 'SELECT * FROM ';
-    query = query.concat(tableName);
+    let query = 'SELECT * FROM [';
+    query = query.concat(tableName) + ']';
     return this.database.executeSql(query, []).then(data => {
       const table: Elem[] = [];
       if (data.rows.length > 0) {
@@ -158,8 +167,8 @@ export class DatabaseService {
    * @param tableName
    */
   loadTableForResults(tableName: string) {
-    let query = 'SELECT * FROM ';
-    query = query.concat(tableName);
+    let query = 'SELECT * FROM [';
+    query = query.concat(tableName) + ']';
     return this.database.executeSql(query, []).then(data => {
       const table: ResElem[] = [];
       if (data.rows.length > 0) {
@@ -172,6 +181,7 @@ export class DatabaseService {
         }
       }
       this.selectedTableForResults.next(table);
+      this.tableForResultsReady.next(true);
     });
   }
 
@@ -185,7 +195,7 @@ export class DatabaseService {
    */
   addTableElement(tableName: string, spanishName: string, englishName: string) {
     const data = [spanishName, englishName];
-    return this.database.executeSql('INSERT INTO ' + tableName + ' (spanishName, englishName) VALUES (?, ?)', data).then(_ => {
+    return this.database.executeSql('INSERT INTO [' + tableName + '] (spanishName, englishName) VALUES (?, ?)', data).then(_ => {
       this.loadTable(tableName);
     });
   }
@@ -200,7 +210,7 @@ export class DatabaseService {
    */
   addTableElementForResults(tableName: string, aciertos: number, errores: number) {
     const data = [aciertos, errores];
-    return this.database.executeSql('INSERT INTO ' + tableName + ' (aciertos, errores) VALUES (?, ?)', data).then(_ => {
+    return this.database.executeSql('INSERT INTO [' + tableName + '] (aciertos, errores) VALUES (?, ?)', data).then(_ => {
       this.loadTable(tableName);
     });
   }
@@ -212,7 +222,7 @@ export class DatabaseService {
    * @param tableName: Nombre de la tabla desde la cual queremos obtener el elemento
    */
   getTableElement(id: number, tableName: string): Promise<Elem> {
-    return this.database.executeSql('SELECT * FROM ? WHERE id = ?', [tableName, id]).then(data => {
+    return this.database.executeSql('SELECT * FROM [?] WHERE id = ?', [tableName, id]).then(data => {
       return {
         id: data.rows.item(0).id,
         spanishName: data.rows.item(0).spanishName,
@@ -229,7 +239,7 @@ export class DatabaseService {
    * @param tableSelected: Nombre de la tabla desde la cual queremos borrar el elemento
    */
   deleteTableElement(id: number, tableSelected: string) {
-    const query = 'DELETE FROM ' + tableSelected + ' WHERE id = ' + id;
+    const query = 'DELETE FROM [' + tableSelected + '] WHERE id = ' + id;
     return this.database.executeSql(query, []).then(_ => {
       this.loadTable(tableSelected);
     });
@@ -243,7 +253,7 @@ export class DatabaseService {
    * @param tablaSelected
    */
   updateTableElement(elemento: Elem, tablaSelected: string) {
-    const query = `UPDATE ` + tablaSelected + ` SET spanishName = '` + elemento.spanishName + `', englishName = '` + elemento.englishName + `' WHERE id = ` + elemento.id;
+    const query = `UPDATE [` + tablaSelected + `] SET spanishName = '` + elemento.spanishName + `', englishName = '` + elemento.englishName + `' WHERE id = ` + elemento.id;
 
     return this.database.executeSql(query, []).then(_ => {
       this.loadTable(tablaSelected);
@@ -258,7 +268,7 @@ export class DatabaseService {
    * @param tablaSelected
    */
   updateTableElementForResults(elemento: ResElem, tablaSelected: string) {
-    const query = `UPDATE ` + tablaSelected + ` SET aciertos = '` + elemento.aciertos + `', errores = '` + elemento.errores + `' WHERE id = ` + elemento.id;
+    const query = `UPDATE [` + tablaSelected + `] SET aciertos = '` + elemento.aciertos + `', errores = '` + elemento.errores + `' WHERE id = ` + elemento.id;
 
     return this.database.executeSql(query, []).then(_ => {
       this.loadTable(tablaSelected);
@@ -271,8 +281,8 @@ export class DatabaseService {
    * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
    */
   createTable(tableName: string) {
-    let query = 'CREATE TABLE IF NOT EXISTS ';
-    query = query.concat(tableName + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, spanishName TEXT NOT NULL, englishName TEXT NOT NULL)');
+    let query = 'CREATE TABLE IF NOT EXISTS [';
+    query = query.concat(tableName + '] (id INTEGER PRIMARY KEY AUTOINCREMENT, spanishName TEXT NOT NULL, englishName TEXT NOT NULL)');
     return this.database.executeSql(query, []).then(data => {
       this.loadTables();
     });
@@ -284,8 +294,8 @@ export class DatabaseService {
    * @description: Crea una tabla en la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName" para mostrar en Resultados.
    */
   createTableForResults(tableName: string) {
-    let query = 'CREATE TABLE IF NOT EXISTS ';
-    query = query.concat(tableName + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, aciertos INTEGER NOT NULL, errores INTEGER NOT NULL)');
+    let query = 'CREATE TABLE IF NOT EXISTS [';
+    query = query.concat(tableName + '] (id INTEGER PRIMARY KEY AUTOINCREMENT, aciertos INTEGER NOT NULL, errores INTEGER NOT NULL)');
     return this.database.executeSql(query, []).then(data => {
       this.loadTables();
     });
@@ -298,8 +308,8 @@ export class DatabaseService {
    * @description: Borra una tabla de la DB dado un nombre de tabla y recarga la variable observable "tablesArrayName".
    */
   deleteTable(tableName: string) {
-    let query = 'DROP TABLE IF EXISTS ';
-    query = query.concat(tableName);
+    let query = 'DROP TABLE IF EXISTS [';
+    query = query.concat(tableName) + ']';
     return this.database.executeSql(query, []).then(data => {
       this.loadTables();
     });
@@ -311,8 +321,8 @@ export class DatabaseService {
    * @description: Actualiza el nombre de una tabla pasada como parametro.
    */
   updateTableName(tableName: string, newTableName: string) {
-    let query = 'ALTER TABLE ';
-    query = query.concat(tableName + ' RENAME TO ' + newTableName);
+    let query = 'ALTER TABLE [';
+    query = query.concat(tableName + '] RENAME TO ' + newTableName);
     return this.database.executeSql(query, []).then(data => {
       this.loadTables();
     });

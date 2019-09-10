@@ -44,7 +44,6 @@ export class UnePalabrasPage implements OnInit, OnDestroy {
       if (tableRdy) {
         // A continuación nos suscribiremos al observable que almacena el resultado de SELECT * FROM TABLE desuscribiendonos inmediatamente despues con la pipe(take(1))
         this.db.getSelectedTableForGame()
-        // .pipe(take(1))
         .pipe(takeUntil(this.unsubscribe$)).subscribe(table => { // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
           this.tableArrayElements = table;
           /* Inicializamos el mapa id-valorMap<idColumna, valor> para cada entrada en la tabla de animales con la que se va a jugar. De este
@@ -63,6 +62,7 @@ export class UnePalabrasPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     console.log('Une palabras: ngOnDestory');
+    this.db.tableReady = new BehaviorSubject(false);
     this.db.selectedTableForGame = new BehaviorSubject<Elem[]>([]);
     this.unsubscribe$.next();
     this.unsubscribe$.complete();

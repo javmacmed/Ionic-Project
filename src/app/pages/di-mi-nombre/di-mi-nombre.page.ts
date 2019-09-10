@@ -3,7 +3,7 @@
  * First version: SEJMM DS003 01/09/2019; Desarrollo 'Di Mi Nombre'; Primera Fase; Lógica base.
  * */
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { DatabaseService, Elem, ResElem} from './../../services/database.service'; // Importamos clases DB
+import { DatabaseService, Elem, ResElem } from './../../services/database.service'; // Importamos clases DB
 import { Subject, BehaviorSubject } from 'rxjs';
 import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
@@ -39,7 +39,6 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
   /* Para los resultados */
   correctAnswers = 0;
   incorrectAnswers = 0;
-  ok = false;
 
   constructor(private db: DatabaseService, // DS002: Base de datos SQLite
     public popoverCtrl: PopoverController, // DS006: Implementación de ion-popover para mostrar el final del juego
@@ -58,12 +57,17 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
         /* Cargamos tabla de elementos para mostrar en los slides */
         this.db.loadTableForGame(this.argumentos, 5);
         /* Cargamos tablas para obtener al finalizar el juego la tabla resultados que corresponde en caso de existir (DS011)*/
+        const resultTableName = 'res_' + this.argumentos + '_diminombre';
         this.db.loadTablesForResults();
         this.db.getTablesForResults()
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe(tables => {
-          this.tablesArrayName = tables;
-        });
+          .pipe(takeUntil(this.unsubscribe$))
+          .subscribe(tableResult => {
+            this.tablesArrayName = tableResult;
+            /* Cargamos tabla de elementos para mostrar en los slides */
+            if (this.tablesArrayName.includes(resultTableName)) {
+              this.db.loadTableForResults(resultTableName);
+            }
+          });
       }
     });
     this.db.getTableState().pipe(takeUntil(this.unsubscribe$)).subscribe(tableRdy => {
@@ -87,7 +91,11 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     console.log('Di Mi nombre: ngOnDestory');
+    this.db.tableReady = new BehaviorSubject(false);
+    this.db.tableForResultsReady = new BehaviorSubject(false);
     this.db.selectedTableForGame = new BehaviorSubject<Elem[]>([]);
+    this.db.tablesArrayNameForResults = new BehaviorSubject<string[]>([]);
+    this.db.selectedTableForResults = new BehaviorSubject<ResElem[]>([]);
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -125,7 +133,6 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
    * @description Nos desplaza hacia el próximo slide creado reinicializando todas las variables de estado a su valor por defecto
    */
   nextSlide() {
-    this.ok = false;
     this.slides.slideNext();
     this.letterCounter = 0;
     // this.getSlideIndex();
@@ -169,33 +176,40 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
    */
   isSlideFinished() {
     if (this.letterCounter === this.elemViewedInCurrentSlide.englishName.length) {
+      /*** SEJMM INI RESULTADOS ***/
       if (this.isEndSlide() === true || this.slideIndex === this.numOfSlides - 1) {
         if (_.isEqual(this.inputLettersArray, this.correctLettersArray)) {
           this.correctAnswers++;
         } else {
           this.incorrectAnswers++;
         }
+
         /* Creamos tabla de resultados correspondiente con resultado del juego obtenido o, de ya existir, sumaremos los errores y aciertos a la suma total almacenada esta tabla y este juego */
         const resultTableName = 'res_' + this.argumentos + '_diminombre';
         if (this.tablesArrayName.includes(resultTableName)) {
           // Si la tabla ya existe
-          this.db.loadTableForResults(resultTableName);
-          this.db.getSelectedTableForResults()
-          .pipe(takeUntil(this.unsubscribe$))
-          .subscribe(tableResult => {
-            this.tableArrayResElements = tableResult;
-            const auxResElem: ResElem = {
-              id: this.tableArrayResElements[0].id,
-              aciertos: this.tableArrayResElements[0].aciertos + this.correctAnswers,
-              errores: this.tableArrayResElements[0].errores + this.incorrectAnswers
-            };
-            this.db.updateTableElementForResults(auxResElem, resultTableName);
+          this.db.getTableForResultsState().pipe(takeUntil(this.unsubscribe$)).subscribe(resRdy => {
+            if (resRdy) {
+              // Si la tabla ya existe
+              this.db.getSelectedTableForResults()
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe(tableResult => {
+                  this.tableArrayResElements = tableResult;
+                  const auxResElem = {
+                    id: this.tableArrayResElements[0].id,
+                    aciertos: this.tableArrayResElements[0].aciertos +  this.correctAnswers,
+                    errores: this.tableArrayResElements[0].errores + this.incorrectAnswers
+                  };
+                  this.db.updateTableElementForResults(auxResElem, resultTableName);
+                });
+            }
           });
         } else {
           // Si la tabla nunca ha sido creada
           this.db.createTableForResults(resultTableName); // Creamos tabla
           this.db.addTableElementForResults(resultTableName, this.correctAnswers, this.incorrectAnswers); // Añadimos elementos
         }
+      /*** SEJMM FIN RESULTADOS ***/
 
         /* Mostramos fin del juego */
         (async () => {
@@ -209,15 +223,21 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
         } else {
           this.incorrectAnswers++;
         }
-        this.lockSwipes(false);
-        this.ok = true;
+        // this.lockSwipes(false);
         this.nextSlide();
-        this.lockSwipes(true);
+        // this.lockSwipes(true);
 
       }
     }
   }
 
+  isActiveDiv(divIndex: number): number {
+    if (divIndex === this.letterCounter) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
   /**
  * Crea un delay/sleep/Timer o callback en la aplicación. Usado con la función async/await permitiremos que dicho callback sea asincrono al resto de la app.
  * SEJMM DS003.1; Implementación de Timer asincrono para devolver el estado por defecto a las duplas incorrectas pasado un tiempo determinado.
