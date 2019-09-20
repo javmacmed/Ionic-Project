@@ -16,11 +16,11 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule, // SEJMM DSFD009;  Necesario para el control de formularios en el template
+    ReactiveFormsModule, // SEJMM DS009;  Necesario para el control de formularios en el template
     IonicModule,
     RouterModule.forChild(routes)
   ],
   declarations: [FormCreationPage],
-  entryComponents: [FormCreationPage]
+  entryComponents: [FormCreationPage] // SEJMM DS009; Necesario para poder utilizarlo como un router component y cargarlo imperativamente
 })
 export class FormCreationPageModule {}

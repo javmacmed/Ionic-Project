@@ -13,9 +13,7 @@ import { timer } from 'rxjs/observable/timer'; // SEJMM DS004 SplashScreen + ani
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
   public appPages: Array<Pages>;
-
   showSplash = true; // SEJMM DS004 SplashScreen + animation
 
   constructor(
@@ -45,7 +43,6 @@ export class AppComponent {
       //   icon: 'cog'
       // }
     ];
-
     this.initializeApp();
   }
 

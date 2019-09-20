@@ -107,7 +107,6 @@ export class HomeResultsPage {
   }
 
   goToSelectTable() {
-    // this.navCtrl.navigateRoot('/une-palabras');
     this.navCtrl.navigateRoot('/select-table');
   }
 

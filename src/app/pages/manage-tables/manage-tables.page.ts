@@ -53,7 +53,7 @@ export class ManageTablesPage implements OnInit {
    */
   async presentFormCreationModal() {
     const modal = await this.modalCtrl.create({
-      component: FormCreationPage,
+      component: FormCreationPage, // Usamos nuestro formulario como un routed entry component, definido en form-creation.module.ts
       mode: 'ios'
     });
     return await modal.present();
@@ -64,7 +64,7 @@ export class ManageTablesPage implements OnInit {
    */
   async presentFormModModal(table: string) {
     const modal = await this.modalCtrl.create({
-      component: FormModPage,
+      component: FormModPage, // Usamos nuestro formulario como un routed entry component, definido en form-mod.module.ts
       componentProps: { 'tableNameInput': table },
       mode: 'ios'
     });

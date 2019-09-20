@@ -5,7 +5,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { DatabaseService, Elem, ResElem } from './../../services/database.service'; // Importamos clases DB
 import { Subject, BehaviorSubject } from 'rxjs';
-import { PopoverController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
+import { PopoverController, ToastController } from '@ionic/angular'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { NotificationsComponent } from './../../components/notifications/notifications.component'; // DS006: Implementación de ion-popover para mostrar el final del juego
 import { ActivatedRoute } from '@angular/router';
 import { takeUntil } from 'rxjs/operators'; // SEJMM DS009.2; Fix memory leak  provocado por suscripción y Fix de repetición de tablas provocado por suscripción
@@ -42,6 +42,7 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
 
   constructor(private db: DatabaseService, // DS002: Base de datos SQLite
     public popoverCtrl: PopoverController, // DS006: Implementación de ion-popover para mostrar el final del juego
+    public toastCtrl: ToastController,
     private activeRoute: ActivatedRoute, // DS007: Preparación multitabla
     private alterOrder: AlterOrderPipe,
     private spell: SpellPipe
@@ -228,9 +229,15 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
         // this.lockSwipes(true);
 
       }
+    } else {
+     this.presentToast();
     }
   }
 
+  /**
+   * @description Nos sirve para determinar cual de los div sobre los que se iran colocando las letras es el activo
+   * @param divIndex Index basado en numero de letras escritas en array de letras escritas al pulsar los botones con las letras desordenadas en ingles
+   */
   isActiveDiv(divIndex: number): number {
     if (divIndex === this.letterCounter) {
       return 1;
@@ -259,5 +266,17 @@ export class DiMiNombrePage implements OnInit, OnDestroy {
       backdropDismiss: false // Evita que el popover desaparezca al pulsar sobre el backdrop
     });
     return await popover.present();
+  }
+
+  /**
+   * @description Presenta un toast.
+   * SEJMM 19/09/2019;
+   */
+  async presentToast() {
+    const toast = await this.toastCtrl.create({
+      message: 'Debe rellenar los huecos antes de confirmar',
+      duration: 2000
+    });
+    toast.present();
   }
 }

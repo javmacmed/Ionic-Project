@@ -3,11 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 /* SEJMM INI DS002; SQLite Database */
@@ -19,7 +17,6 @@ import { Keyboard } from '@ionic-native/keyboard/ngx'; /* SEJMM DS010; Ionic Key
 import { FormCreationPageModule } from './pages/modal/form-creation/form-creation.module';
 import { FormModPageModule } from './pages/modal/form-mod/form-mod.module'; // DS009.1: Implementación de formulario para modificación de tablas
 import { SearchFilterPageModule } from './pages/modal/search-filter/search-filter.module';
-
 // Components
 import { NotificationsComponent } from './components/notifications/notifications.component';
 
@@ -35,7 +32,7 @@ import { NotificationsComponent } from './components/notifications/notifications
     FormModPageModule, // DS009.1: Implementación de formulario para modificación de tablas
     SearchFilterPageModule
   ],
-  entryComponents: [NotificationsComponent], // SEJMM; Para carga dinamica en la View (Vista)
+  entryComponents: [NotificationsComponent], // SEJMM; Necesario para poder utilizarlo como un router component y cargarlo imperativamente
   providers: [
     StatusBar,
     SplashScreen,
