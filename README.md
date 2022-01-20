@@ -5,4 +5,4 @@ La documentación se encuentra bajo el archivo Documentacion.pdf, esta es extens
 
 # Para empezar:
  - Clona este repositorio: git clone https://github.com/javmacmed/Ionic-Project.git.
- - Sigue los pasos explicados en la documentación
+ - Sigue los pasos explicados en la documentación.
